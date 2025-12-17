@@ -4,6 +4,6 @@ public class DiversityClassification{
     private long id;
     private String code;
     private  String description ;
-    private Boolean active;
+    private Boolean active=true;
     
 }
