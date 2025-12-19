@@ -1,9 +1,19 @@
-package com.example.demo.service;
+@Service
+public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
-import com.example.demo.entity.PurchaseOrder;
-import java.util.List;
+    private final PurchaseOrderRepository repository;
 
-public interface PurchaseOrderService {
-    PurchaseOrder createPurchaseOrder(PurchaseOrder po);
-    List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId);
+    public PurchaseOrderServiceImpl(PurchaseOrderRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public PurchaseOrder createPurchaseOrder(PurchaseOrder po) {
+        return repository.save(po);
+    }
+
+    @Override
+    public List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId) {
+        return repository.findBySupplierId(supplierId);
+    }
 }
