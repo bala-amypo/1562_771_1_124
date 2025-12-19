@@ -1,43 +1,8 @@
 package com.example.demo.dto;
 
 public class JwtResponse {
-
-    private String token;
-    private Long userId;
-    private String email;
-    private String role;
-
-    // ---------- Getters & Setters ----------
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public String token;
+    public Long userId;
+    public String email;
+    public String role;
 }
