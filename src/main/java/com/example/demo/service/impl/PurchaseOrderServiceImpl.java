@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+
 @Service
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
@@ -23,6 +25,6 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId) {
-        return repository.findAll(); // exam-safe simple logic
+        return repository.findAll();
     }
 }
