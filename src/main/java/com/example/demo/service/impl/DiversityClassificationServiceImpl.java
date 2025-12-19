@@ -1,16 +1,28 @@
 package com.example.demo.service.impl;
 
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.DiversityClassification;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.DiversityClassificationRepository;
 import com.example.demo.service.DiversityClassificationService;
+import org.springframework.stereotype.Service;
 
 @Service
-public class DiversityClassificationServiceImpl implements DiversityClassificationService {
+public class DiversityClassificationServiceImpl
+        implements DiversityClassificationService {
 
-    private final DiversityClassificationRepository diversityClassificationRepository;
+    private final DiversityClassificationRepository repository;
 
     public DiversityClassificationServiceImpl(
-            DiversityClassificationRepository diversityClassificationRepository) {
-        this.diversityClassificationRepository = diversityClassificationRepository;
+            DiversityClassificationRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public void deactivateClassification(Long id) {
+        DiversityClassification dc = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Classification not found"));
+        dc.setActive(false);
+        repository.save(dc);
     }
 }

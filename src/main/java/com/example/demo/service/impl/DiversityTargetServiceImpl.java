@@ -1,15 +1,26 @@
 package com.example.demo.service.impl;
 
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.DiversityTarget;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    private final DiversityTargetRepository diversityTargetRepository;
+    private final DiversityTargetRepository repository;
 
-    public DiversityTargetServiceImpl(DiversityTargetRepository diversityTargetRepository) {
-        this.diversityTargetRepository = diversityTargetRepository;
+    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public void deactivateTarget(Long id) {
+        DiversityTarget target = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Target not found"));
+        target.setActive(false);
+        repository.save(target);
     }
 }
