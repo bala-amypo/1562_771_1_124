@@ -1,19 +1,11 @@
-@Service
-public class PurchaseOrderServiceImpl implements PurchaseOrderService {
+package com.example.demo.service;
 
-    private final PurchaseOrderRepository repository;
+import com.example.demo.entity.PurchaseOrder;
+import java.util.List;
 
-    public PurchaseOrderServiceImpl(PurchaseOrderRepository repository) {
-        this.repository = repository;
-    }
+public interface PurchaseOrderService {
 
-    @Override
-    public PurchaseOrder createPurchaseOrder(PurchaseOrder po) {
-        return repository.save(po);
-    }
+    PurchaseOrder createPurchaseOrder(PurchaseOrder order);
 
-    @Override
-    public List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId) {
-        return repository.findBySupplierId(supplierId);
-    }
+    List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId);
 }
