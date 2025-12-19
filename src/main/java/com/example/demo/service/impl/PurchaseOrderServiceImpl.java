@@ -17,8 +17,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public PurchaseOrder createPurchaseOrder(PurchaseOrder po) {
-        return repository.save(po);
+    public PurchaseOrder createPurchaseOrder(PurchaseOrder purchaseOrder) {
+        return repository.save(purchaseOrder);
     }
 
     @Override
