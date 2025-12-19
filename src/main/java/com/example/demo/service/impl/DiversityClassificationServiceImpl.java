@@ -8,20 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class DiversityClassificationServiceImpl
-        implements DiversityClassificationService {
+public class DiversityClassificationServiceImpl implements DiversityClassificationService {
 
     private final DiversityClassificationRepository repository;
 
-    public DiversityClassificationServiceImpl(
-            DiversityClassificationRepository repository) {
+    public DiversityClassificationServiceImpl(DiversityClassificationRepository repository) {
         this.repository = repository;
-    }
-
-    @Override
-    public DiversityClassification createClassification(
-            DiversityClassification classification) {
-        return repository.save(classification);
     }
 
     @Override
@@ -31,10 +23,9 @@ public class DiversityClassificationServiceImpl
 
     @Override
     public void deactivateClassification(Long id) {
-        DiversityClassification dc = repository.findById(id).orElse(null);
-        if (dc != null) {
-            dc.setActive(false);
-            repository.save(dc);
-        }
+        DiversityClassification dc = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Classification not found"));
+        dc.setActive(false);
+        repository.save(dc);
     }
 }

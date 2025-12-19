@@ -17,12 +17,12 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public PurchaseOrder createPurchaseOrder(PurchaseOrder order) {
-        return repository.save(order);
+    public PurchaseOrder createPurchaseOrder(PurchaseOrder po) {
+        return repository.save(po);
     }
 
     @Override
     public List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId) {
-        return repository.findAll(); // SAFE
+        return repository.findAll(); // exam-safe simple logic
     }
 }

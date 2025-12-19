@@ -23,7 +23,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Supplier getSupplierById(Long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
     }
 
     @Override
@@ -33,10 +34,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public void deactivateSupplier(Long id) {
-        Supplier supplier = repository.findById(id).orElse(null);
-        if (supplier != null) {
-            supplier.setActive(false);
-            repository.save(supplier);
-        }
+        Supplier supplier = getSupplierById(id);
+        supplier.setActive(false);
+        repository.save(supplier);
     }
 }
