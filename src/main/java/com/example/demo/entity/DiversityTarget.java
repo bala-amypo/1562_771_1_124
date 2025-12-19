@@ -1,58 +1,26 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 
-
+@Entity
+@Table(name = "diversity_targets")
 public class DiversityTarget {
 
- 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer targetYear;
+    private int targetYear;
 
-    private String classificationCode;
+    private Double targetPercentage;
 
-    private BigDecimal percentage;
+    @ManyToOne
+    private DiversityClassification classification;
 
-    private Boolean active = true;
+    private Boolean active;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getTargetYear() {
-        return targetYear;
-    }
-
-    public void setTargetYear(Integer targetYear) {
-        this.targetYear = targetYear;
-    }
-
-    public String getClassificationCode() {
-        return classificationCode;
-    }
-
-    public void setClassificationCode(String classificationCode) {
-        this.classificationCode = classificationCode;
-    }
-
-    public BigDecimal getPercentage() {
-        return percentage;
-    }
-
-    public void setPercentage(BigDecimal percentage) {
-        this.percentage = percentage;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
+    @PrePersist
+    public void preSave() {
+        if (active == null) active = true;
     }
 }

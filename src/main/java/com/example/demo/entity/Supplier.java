@@ -1,31 +1,40 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+@Entity
+@Table(name = "suppliers")
 public class Supplier {
 
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private String registrationNumber;
-
+    @Column(unique = true)
     private String email;
 
-    private String phone;
-    private String address;
+    private String registrationNumber;
 
-    private List<DiversityClassification> diversityClassifications;
+    private Boolean isActive;
 
-    private Boolean isActive = true;
+    private LocalDateTime createdAt;
 
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    public void onCreate() {
-        createdAt = new Timestamp(System.currentTimeMillis());
+    private LocalDateTime updatedAt;
+
+    @ManyToMany
+    private Set<DiversityClassification> diversityClassifications;
+
+    @PrePersist
+    public void prePersist() {
+        if (isActive == null) isActive = true;
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
-    public void onUpdate() {
-        updatedAt = new Timestamp(System.currentTimeMillis());
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
-
 }
