@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "diversity_classifications")
@@ -11,19 +11,20 @@ public class DiversityClassification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String code;
+    private String name;
 
-    private String description;
+    private Boolean isActive;
 
-    private Boolean active;
-
-    @ManyToMany(mappedBy = "diversityClassifications")
-    private Set<Supplier> suppliers;
+    private LocalDateTime createdAt;
 
     @PrePersist
-    @PreUpdate
-    public void preSave() {
-        if (active == null) active = true;
-        if (code != null) code = code.toUpperCase();
+    public void prePersist() {
+        if (isActive == null) isActive = true;
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+
+    // ✅ REQUIRED
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }

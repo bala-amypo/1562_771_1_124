@@ -37,4 +37,9 @@ public class Supplier {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // ✅ REQUIRED
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
 }

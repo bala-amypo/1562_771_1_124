@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "spend_categories")
@@ -12,10 +13,18 @@ public class SpendCategory {
 
     private String name;
 
-    private Boolean active;
+    private Boolean isActive;
+
+    private LocalDateTime createdAt;
 
     @PrePersist
-    public void preSave() {
-        if (active == null) active = true;
+    public void prePersist() {
+        if (isActive == null) isActive = true;
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+
+    // ✅ REQUIRED
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
