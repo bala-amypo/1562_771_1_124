@@ -84,3 +84,14 @@
 
 
 </project>
+<dependencies>
+
+    <!-- already existing dependencies will be here -->
+
+    <!-- ADD THIS -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+</dependencies>
