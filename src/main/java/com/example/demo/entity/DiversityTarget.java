@@ -11,7 +11,6 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔑 IMPORTANT: repository will use this exact name
     @Column(nullable = false)
     private Integer year;
 
@@ -31,7 +30,7 @@ public class DiversityTarget {
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
-    // ===== Getters & Setters =====
+    // ===== Getters =====
     public Long getId() {
         return id;
     }
@@ -40,27 +39,34 @@ public class DiversityTarget {
         return year;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-
     public Double getTargetPercentage() {
         return targetPercentage;
-    }
-
-    public void setTargetPercentage(Double targetPercentage) {
-        this.targetPercentage = targetPercentage;
     }
 
     public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean active) {
-        isActive = active;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    // ===== Setters =====
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public void setTargetPercentage(Double targetPercentage) {
+        this.targetPercentage = targetPercentage;
+    }
+
+    // ✅ REQUIRED for Spring + your Service code
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+
+    // Optional (still useful)
+    public void setIsActive(Boolean active) {
+        this.isActive = active;
     }
 }
