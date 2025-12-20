@@ -4,9 +4,9 @@ import com.example.demo.entity.DiversityTarget;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface DiversityTargetRepository
-        extends JpaRepository<DiversityTarget, Long> {
+public interface DiversityTargetRepository extends JpaRepository<DiversityTarget, Long> {
 
-    // 🔑 MUST match entity field name "year"
-    List<DiversityTarget> findByYear(int year);
+    List<DiversityTarget> findByYear(Integer year);
+
+    List<DiversityTarget> findByIsActiveTrue();
 }
