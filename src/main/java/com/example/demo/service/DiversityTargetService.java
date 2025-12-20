@@ -31,7 +31,7 @@ public class DiversityTargetService {
         DiversityTarget target = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Target not found"));
 
-        target.setIsActive(false);
+        target.setIsActive(false); // ✅ correct method
         repository.save(target);
     }
 }
