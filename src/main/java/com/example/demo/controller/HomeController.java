@@ -8,11 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "✅ Supplier Diversity Tracker Backend is running";
-    }
-
-    @GetMapping("/health")
-    public String health() {
-        return "OK";
+        return "Supplier Diversity Tracker Backend is running";
     }
 }
