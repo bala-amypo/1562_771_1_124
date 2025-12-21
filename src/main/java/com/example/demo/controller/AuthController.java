@@ -1,54 +1,23 @@
-package com.example.demo.entity;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Table(name = "users")
-public class User {
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true, nullable = false)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-
-    private String role; // ROLE_USER, ROLE_ADMIN
-
-    // ===== GETTERS & SETTERS =====
-
-    public Long getId() {
-        return id;
+    @GetMapping("/test")
+    public String test() {
+        return "Auth API working!";
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @PostMapping("/login")
+    public String login() {
+        return "Login API pending";
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-    
-    public void setRole(String role) {
-        this.role = role;
+    @PostMapping("/register")
+    public String register() {
+        return "Register API pending";
     }
 }
