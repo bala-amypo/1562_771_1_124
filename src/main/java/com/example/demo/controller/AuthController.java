@@ -1,84 +1,74 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.JwtResponse;
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.RegisterRequest;
+import com.example.demo.dto.*;
 import com.example.demo.entity.UserAccount;
-import com.example.demo.exception.UnauthorizedException;
+import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtUtil;
-import com.example.demo.service.UserAccountService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
+    private final UserAccountRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService,
-                          AuthenticationManager authenticationManager,
+    public AuthController(UserAccountRepository userRepo,
+                          PasswordEncoder passwordEncoder,
                           JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
+    // ✅ REGISTER
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+    public JwtResponse register(@RequestBody RegisterRequest request) {
+
         UserAccount user = new UserAccount();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-        UserAccount saved = userAccountService.register(user);
+        UserAccount saved = userRepo.save(user);
 
-        String token = jwtUtil.generateToken(
+        String token = jwtUtil.generateToken(saved.getEmail());
+
+        return new JwtResponse(
                 saved.getId(),
                 saved.getEmail(),
-                saved.getRole()
-        );
-
-        return ResponseEntity.ok(
-                new JwtResponse(token, saved.getId(), saved.getEmail(), saved.getRole())
+                saved.getRole(),
+                token
         );
     }
 
+    // ✅ LOGIN
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
+    public JwtResponse login(@RequestBody LoginRequest request) {
 
-            UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+        UserAccount user = userRepo.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email"));
 
-            String token = jwtUtil.generateToken(
-                    user.getId(),
-                    user.getEmail(),
-                    user.getRole()
-            );
-
-            return ResponseEntity.ok(
-                    new JwtResponse(token, user.getId(), user.getEmail(), user.getRole())
-            );
-
-        } catch (Exception e) {
-            throw new UnauthorizedException("Invalid email or password");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
         }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return new JwtResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                token
+        );
     }
 
+    // ✅ TEST
     @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("AUTH CONTROLLER WORKING");
+    public String test() {
+        return "Auth Controller Working";
     }
 }
