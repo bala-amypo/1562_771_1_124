@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI openAPI() {
+    public OpenAPI supplierDiversityOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("Supplier Diversity Tracker API")
-                        .version("1.0")
-                        .description("Backend APIs for Supplier Diversity Tracker"));
+                        .description("Backend APIs for Supplier Diversity Tracker")
+                        .version("1.0.0"));
     }
 }
