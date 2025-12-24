@@ -6,45 +6,33 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "supplier-diversity-secret-key";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+    private static final String SECRET_KEY = "supplier_diversity_secret_key";
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
-    public String generateToken(String email, String role) {
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+    public String generateToken(String username) {
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(email)
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public String extractEmail(String token) {
+    public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
 
-    public String extractRole(String token) {
-        Object role = getClaims(token).get("role");
-        return role != null ? role.toString() : "USER";
+    public boolean isTokenValid(String token) {
+        try {
+            return !getClaims(token).getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Claims getClaims(String token) {
