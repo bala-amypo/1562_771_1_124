@@ -4,16 +4,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
+@Component
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        resp.setContentType("application/json");
+        resp.setContentType("text/plain");
         resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().write("{\"status\":\"UP\"}");
+        resp.getWriter().write("OK");
     }
 }
