@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.SpendCategory;
-import com.example.demo.repository.SpendCategoryRepository;
+import com.example.demo.service.SpendCategoryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,22 +11,19 @@ import java.util.List;
 @RequestMapping("/api/spend-categories")
 public class SpendCategoryController {
 
-    private final SpendCategoryRepository repository;
+    private final SpendCategoryService spendCategoryService;
 
-    public SpendCategoryController(SpendCategoryRepository repository) {
-        this.repository = repository;
+    public SpendCategoryController(SpendCategoryService spendCategoryService) {
+        this.spendCategoryService = spendCategoryService;
     }
 
-    // ✅ TEST DB CONNECTION (READ)
-    @GetMapping
-    public List<SpendCategory> getAllActiveCategories() {
-        return repository.findByIsActiveTrue();
-    }
-
-    // ✅ CREATE DATA
     @PostMapping
-    public SpendCategory create(@RequestBody SpendCategory category) {
-        category.setActive(true);
-        return repository.save(category);
+    public ResponseEntity<SpendCategory> createCategory(@RequestBody SpendCategory category) {
+        return ResponseEntity.ok(spendCategoryService.saveCategory(category));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SpendCategory>> getAllCategories() {
+        return ResponseEntity.ok(spendCategoryService.getAllCategories());
     }
 }
