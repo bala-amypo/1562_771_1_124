@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DiversityTarget;
 import com.example.demo.service.DiversityTargetService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,23 +12,28 @@ public class DiversityTargetController {
 
     private final DiversityTargetService diversityTargetService;
 
+    // ✅ REQUIRED constructor
     public DiversityTargetController(DiversityTargetService diversityTargetService) {
         this.diversityTargetService = diversityTargetService;
     }
 
     @PostMapping
-    public ResponseEntity<DiversityTarget> createTarget(@RequestBody DiversityTarget target) {
-        return ResponseEntity.ok(diversityTargetService.createTarget(target));
+    public DiversityTarget createTarget(@RequestBody DiversityTarget target) {
+        return diversityTargetService.createTarget(target);
+    }
+
+    @GetMapping
+    public List<DiversityTarget> getAllTargets() {
+        return diversityTargetService.getAllTargets();
     }
 
     @GetMapping("/year/{year}")
-    public ResponseEntity<List<DiversityTarget>> getTargetsByYear(@PathVariable int year) {
-        return ResponseEntity.ok(diversityTargetService.getTargetsByYear(year));
+    public List<DiversityTarget> getTargetsByYear(@PathVariable int year) {
+        return diversityTargetService.getTargetsByYear(year);
     }
 
     @PutMapping("/{id}/deactivate")
-    public ResponseEntity<Void> deactivateTarget(@PathVariable Long id) {
+    public void deactivateTarget(@PathVariable Long id) {
         diversityTargetService.deactivateTarget(id);
-        return ResponseEntity.ok().build();
     }
 }
