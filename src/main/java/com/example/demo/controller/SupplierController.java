@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Supplier;
 import com.example.demo.service.SupplierService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,27 +12,28 @@ public class SupplierController {
 
     private final SupplierService supplierService;
 
+    // ✅ REQUIRED constructor (used by tests)
     public SupplierController(SupplierService supplierService) {
         this.supplierService = supplierService;
     }
 
     @PostMapping
-    public ResponseEntity<Supplier> createSupplier(@RequestBody Supplier supplier) {
-        return ResponseEntity.ok(supplierService.saveSupplier(supplier));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Supplier>> getAllSuppliers() {
-        return ResponseEntity.ok(supplierService.getAllSuppliers());
+    public Supplier createSupplier(@RequestBody Supplier supplier) {
+        return supplierService.createSupplier(supplier);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Supplier> getSupplierById(@PathVariable Long id) {
-        return ResponseEntity.ok(supplierService.getSupplierById(id));
+    public Supplier getSupplierById(@PathVariable Long id) {
+        return supplierService.getSupplierById(id);
+    }
+
+    @GetMapping
+    public List<Supplier> getAllSuppliers() {
+        return supplierService.getAllSuppliers();
     }
 
     @PutMapping("/{id}/deactivate")
-    public ResponseEntity<Supplier> deactivateSupplier(@PathVariable Long id) {
-        return ResponseEntity.ok(supplierService.deactivateSupplier(id));
+    public void deactivateSupplier(@PathVariable Long id) {
+        supplierService.deactivateSupplier(id);
     }
 }
