@@ -7,4 +7,6 @@ public interface UserAccountService {
     UserAccount register(UserAccount user);
 
     UserAccount findByEmailOrThrow(String email);
+
+    boolean passwordMatches(String raw, String encoded);
 }

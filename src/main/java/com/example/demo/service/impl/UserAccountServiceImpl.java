@@ -13,10 +13,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccountServiceImpl(
-            UserAccountRepository repository,
-            PasswordEncoder passwordEncoder
-    ) {
+    public UserAccountServiceImpl(UserAccountRepository repository,
+                                  PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -32,12 +30,15 @@ public class UserAccountServiceImpl implements UserAccountService {
         return repository.save(user);
     }
 
-   @Override
-public UserAccount findByEmailOrThrow(String email) {
-    return repository.findByEmail(email)
-            .orElseThrow(() -> new BadRequestException("User not found"));
-}
-
-
+    @Override
+    public UserAccount findByEmailOrThrow(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
+    // ✅ REQUIRED BY TESTS
+    @Override
+    public boolean passwordMatches(String raw, String encoded) {
+        return passwordEncoder.matches(raw, encoded);
+    }
+}
