@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "suppliers")
 public class Supplier {
 
     @Id
@@ -16,7 +15,6 @@ public class Supplier {
     private String name;
     private String email;
     private String registrationNumber;
-
     private Boolean isActive = true;
 
     private LocalDateTime createdAt;
@@ -36,8 +34,6 @@ public class Supplier {
         updatedAt = LocalDateTime.now();
     }
 
-    // ===== Getters & Setters =====
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -48,10 +44,12 @@ public class Supplier {
     public void setEmail(String email) { this.email = email; }
 
     public String getRegistrationNumber() { return registrationNumber; }
-    public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
 
     public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public void setIsActive(Boolean active) { this.isActive = active; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

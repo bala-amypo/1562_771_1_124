@@ -10,6 +10,7 @@ public class DiversityClassification {
     private Long id;
 
     private String code;
+    private Boolean active = true;
 
     @PrePersist
     public void preSave() {}
@@ -19,4 +20,7 @@ public class DiversityClassification {
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }

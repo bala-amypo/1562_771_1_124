@@ -5,12 +5,15 @@ import java.util.Date;
 
 public class JwtUtil {
 
-    private final byte[] secret = "secretkeysecretkey".getBytes();
-    private final long expiration = 3600000;
+    private byte[] secret = "secretkeysecretkey".getBytes();
+    private long expiration = 3600000;
 
     public JwtUtil() {}
 
-    public JwtUtil(byte[] secret, long expiration) {}
+    public JwtUtil(byte[] secret, long expiration) {
+        this.secret = secret;
+        this.expiration = expiration;
+    }
 
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
@@ -23,6 +26,18 @@ public class JwtUtil {
                 .compact();
     }
 
+    public boolean isTokenValid(String token) {
+        return validateToken(token);
+    }
+
+    public boolean validateToken(String token) {
+        return !getClaims(token).getExpiration().before(new Date());
+    }
+
+    public String extractUsername(String token) {
+        return extractEmail(token);
+    }
+
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }
@@ -33,10 +48,6 @@ public class JwtUtil {
 
     public Long extractUserId(String token) {
         return getClaims(token).get("userId", Long.class);
-    }
-
-    public boolean validateToken(String token) {
-        return !getClaims(token).getExpiration().before(new Date());
     }
 
     private Claims getClaims(String token) {

@@ -11,7 +11,7 @@ public class DiversityTarget {
 
     private Integer targetYear;
     private Double targetPercentage;
-    private Boolean active = true;
+    private Boolean isActive = true;
 
     @ManyToOne
     private DiversityClassification classification;
@@ -28,9 +28,11 @@ public class DiversityTarget {
     public Double getTargetPercentage() { return targetPercentage; }
     public void setTargetPercentage(Double targetPercentage) { this.targetPercentage = targetPercentage; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public Boolean getActive() { return isActive; }
+    public void setIsActive(Boolean active) { this.isActive = active; }
 
     public DiversityClassification getClassification() { return classification; }
-    public void setClassification(DiversityClassification classification) { this.classification = classification; }
+    public void setClassification(DiversityClassification classification) {
+        this.classification = classification;
+    }
 }
