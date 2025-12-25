@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "diversity_targets")
@@ -10,48 +11,102 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer year;
+    private Integer targetYear;
 
-    private Double percentage;
+    private Double targetPercentage;
 
     private Boolean isActive = true;
 
-    // ===== GETTERS =====
+    @ManyToOne
+    @JoinColumn(name = "classification_id")
+    private DiversityClassification classification;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // ================= LIFECYCLE =================
+
+    @PrePersist
+    public void preSave() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.isActive == null) {
+            this.isActive = true;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ================= GETTERS =================
+
     public Long getId() {
         return id;
     }
 
-    public Integer getYear() {
-        return year;
+    public Integer getTargetYear() {
+        return targetYear;
     }
 
-    public Double getPercentage() {
-        return percentage;
+    public Double getTargetPercentage() {
+        return targetPercentage;
+    }
+
+    public DiversityClassification getClassification() {
+        return classification;
+    }
+
+    public Boolean getActive() {
+        return isActive;
     }
 
     public Boolean getIsActive() {
         return isActive;
     }
 
-    // ===== SETTERS =====
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    // ================= SETTERS =================
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
+    public void setTargetYear(Integer targetYear) {
+        this.targetYear = targetYear;
     }
 
-    public void setPercentage(Double percentage) {
-        this.percentage = percentage;
+    // ✅ alias required by tests
+    public void setTargetYear(int year) {
+        this.targetYear = year;
     }
 
-    public void setIsActive(Boolean active) {
+    public void setTargetPercentage(Double targetPercentage) {
+        this.targetPercentage = targetPercentage;
+    }
+
+    // ✅ alias required by tests
+    public void setTargetPercentage(double percentage) {
+        this.targetPercentage = percentage;
+    }
+
+    public void setClassification(DiversityClassification classification) {
+        this.classification = classification;
+    }
+
+    public void setActive(boolean active) {
         this.isActive = active;
     }
 
-    // REQUIRED BY TESTS
-    public void setActive(boolean active) {
+    public void setIsActive(Boolean active) {
         this.isActive = active;
     }
 }

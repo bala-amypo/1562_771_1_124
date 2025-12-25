@@ -7,6 +7,7 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,9 +16,22 @@ public class AuthController {
 
     private final UserAccountService userService;
     private final JwtUtil jwtUtil;
+    private AuthenticationManager authenticationManager;
 
+    // ✅ Constructor used by Spring
     public AuthController(UserAccountService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    // ✅ Constructor REQUIRED by tests
+    public AuthController(
+            UserAccountService userService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil
+    ) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
