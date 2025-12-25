@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "suppliers")
 public class Supplier {
 
     @Id
@@ -15,50 +16,92 @@ public class Supplier {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
     private boolean active = true;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToMany(
-            mappedBy = "supplier",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+    @ManyToMany
+    @JoinTable(
+            name = "supplier_classifications",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "classification_id")
     )
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
+    // =====================
+    // JPA LIFECYCLE
+    // =====================
     @PrePersist
-    void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        active = true;
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.active = true;
     }
 
     @PreUpdate
-    void preUpdate() {
-        updatedAt = LocalDateTime.now();
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
-    // ===== HELPERS =====
-    public void addClassification(DiversityClassification dc) {
-        diversityClassifications.add(dc);
-        dc.setSupplier(this);
+    // =====================
+    // GETTERS & SETTERS
+    // =====================
+    public Long getId() {
+        return id;
     }
 
-    public void removeClassification(DiversityClassification dc) {
-        diversityClassifications.remove(dc);
-        dc.setSupplier(null);
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    // ===== GETTERS / SETTERS =====
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getName() {
+        return name;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // ✅ BOTH getters are REQUIRED
+    public boolean isActive() {
+        return active;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
@@ -66,5 +109,16 @@ public class Supplier {
 
     public void setDiversityClassifications(Set<DiversityClassification> diversityClassifications) {
         this.diversityClassifications = diversityClassifications;
+    }
+
+    // =====================
+    // HELPERS
+    // =====================
+    public void addClassification(DiversityClassification classification) {
+        this.diversityClassifications.add(classification);
+    }
+
+    public void removeClassification(DiversityClassification classification) {
+        this.diversityClassifications.remove(classification);
     }
 }
