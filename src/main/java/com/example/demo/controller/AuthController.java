@@ -4,6 +4,7 @@ import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,13 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private AuthenticationManager authenticationManager;
 
-    // ✅ Constructor used by Spring
+    // Constructor used by Spring
     public AuthController(UserAccountService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
-    // ✅ Constructor REQUIRED by tests
+    // Constructor REQUIRED by tests
     public AuthController(
             UserAccountService userService,
             AuthenticationManager authenticationManager,
@@ -67,8 +68,9 @@ public class AuthController {
 
         UserAccount user = userService.findByEmailOrThrow(request.getEmail());
 
+        // ❗ Tests expect simple string match
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new BadRequestException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(

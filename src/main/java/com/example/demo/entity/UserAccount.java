@@ -15,6 +15,7 @@ public class UserAccount {
     private String role;
     private String fullName;
 
+    private Boolean active;
     private LocalDateTime createdAt;
 
     public UserAccount() {}
@@ -29,7 +30,13 @@ public class UserAccount {
 
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
+        if (this.role == null) {
+            this.role = "USER"; // ✅ REQUIRED
+        }
+        if (this.active == null) {
+            this.active = true; // ✅ REQUIRED
+        }
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() { return id; }
@@ -45,6 +52,9 @@ public class UserAccount {
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
