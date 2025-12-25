@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,17 +21,23 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount register(UserAccount user) {
+
         if (repository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
-    // 🔥 TEST EXPECTS IllegalArgumentException (NOT RuntimeException)
     @Override
     public UserAccount findByEmailOrThrow(String email) {
         return repository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public boolean passwordMatches(String raw, String encoded) {
+        return passwordEncoder.matches(raw, encoded);
     }
 }
