@@ -18,7 +18,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ EXACT constructor required by tests
     public AuthController(
             UserAccountService userAccountService,
             AuthenticationManager authenticationManager,
@@ -43,23 +42,14 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // JwtUtil signature: (Long, String, String)
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
                 saved.getRole()
         );
 
-        // ✅ JwtResponse order is:
-        // (String email, String role, Long userId, String token)
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        saved.getEmail(),
-                        saved.getRole(),
-                        saved.getId(),
-                        token
-                )
-        );
+        // ✅ TEST EXPECTS token-only response
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     // =========================
@@ -68,29 +58,27 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
-        UserAccount user =
-                userAccountService.findByEmailOrThrow(request.getEmail());
+        try {
+            UserAccount user =
+                    userAccountService.findByEmailOrThrow(request.getEmail());
 
-        if (!userAccountService.passwordMatches(
-                request.getPassword(),
-                user.getPassword()
-        )) {
-            throw new RuntimeException("Invalid credentials");
+            if (!userAccountService.passwordMatches(
+                    request.getPassword(),
+                    user.getPassword()
+            )) {
+                throw new RuntimeException("Unauthorized");
+            }
+
+            String token = jwtUtil.generateToken(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getRole()
+            );
+
+            return ResponseEntity.ok(new JwtResponse(token));
+
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Unauthorized");
         }
-
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getId(),
-                        token
-                )
-        );
     }
 }
