@@ -10,19 +10,16 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ REQUIRED BY TESTS
+    // === CORE FIELDS ===
     private Integer year;
-
     private Double percentage;
-
     private Boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "classification_id")
     private DiversityClassification classification;
 
-    // ===== GETTERS =====
-
+    // === STANDARD GETTERS ===
     public Long getId() {
         return id;
     }
@@ -43,8 +40,7 @@ public class DiversityTarget {
         return classification;
     }
 
-    // ===== SETTERS =====
-
+    // === STANDARD SETTERS ===
     public void setId(Long id) {
         this.id = id;
     }
@@ -63,5 +59,32 @@ public class DiversityTarget {
 
     public void setClassification(DiversityClassification classification) {
         this.classification = classification;
+    }
+
+    // =================================================
+    // 🔁 TEST-COMPATIBILITY METHODS (DO NOT REMOVE)
+    // =================================================
+
+    public void setTargetYear(int year) {
+        this.year = year;
+    }
+
+    public int getTargetYear() {
+        return year;
+    }
+
+    public void setTargetPercentage(double percentage) {
+        this.percentage = percentage;
+    }
+
+    public double getTargetPercentage() {
+        return percentage;
+    }
+
+    @PrePersist
+    public void preSave() {
+        if (active == null) {
+            active = true;
+        }
     }
 }
