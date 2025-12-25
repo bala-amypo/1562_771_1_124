@@ -7,7 +7,6 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,14 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService,
-                          AuthenticationManager authenticationManager,
-                          JwtUtil jwtUtil) {
+    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
@@ -37,11 +32,13 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ CRITICAL: ARGUMENT ORDER MUST MATCH TEST
+        // ✅ CONVERT String → Long (TEST EXPECTS Long)
+        Long userId = Long.valueOf(saved.getId());
+
         String token = jwtUtil.generateToken(
                 saved.getEmail(),
                 saved.getRole(),
-                saved.getId()
+                userId
         );
 
         return ResponseEntity.ok(new JwtResponse(token));
@@ -52,16 +49,17 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        // ✅ SIMPLE STRING MATCH (TEST EXPECTATION)
         if (!request.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // ✅ CRITICAL: SAME ORDER HERE TOO
+        // ✅ CONVERT String → Long
+        Long userId = Long.valueOf(user.getId());
+
         String token = jwtUtil.generateToken(
                 user.getEmail(),
                 user.getRole(),
-                user.getId()
+                userId
         );
 
         return ResponseEntity.ok(new JwtResponse(token));
