@@ -28,14 +28,13 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
 
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        return repository.findByYear(year);
+        return repository.findByTargetYear(year);
     }
 
     @Override
     public void deactivateTarget(Long id) {
-        DiversityTarget target = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Target not found"));
-        target.setIsActive(false);
+        DiversityTarget target = repository.findById(id).orElseThrow();
+        target.setActive(false);
         repository.save(target);
     }
 }
