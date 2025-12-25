@@ -22,6 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public JwtResponse register(@RequestBody RegisterRequest request) {
+
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -45,7 +46,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public JwtResponse login(@RequestBody LoginRequest request) {
-        UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+
+        UserAccount user =
+                userAccountService.findByEmailOrThrow(request.getEmail());
 
         if (!userAccountService.passwordMatches(
                 request.getPassword(),
