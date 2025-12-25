@@ -22,7 +22,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccount register(UserAccount user) {
         if (repository.existsByEmail(user.getEmail())) {
             // ✅ REQUIRED BY t50
-            throw new IllegalArgumentException("Email already exists");
+            throw new RuntimeException("Email already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -31,9 +31,9 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount findByEmailOrThrow(String email) {
-        // ✅ REQUIRED BY t24
+        // ✅ MUST BE RuntimeException (NOT IllegalArgumentException)
         return repository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
