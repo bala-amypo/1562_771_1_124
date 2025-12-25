@@ -6,6 +6,7 @@ import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
 import java.util.List;
 
 @Service
@@ -19,6 +20,10 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
 
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
+        // ✅ REQUIRED FOR TEST
+        if (target.getYear() == null) {
+            target.setYear(Year.now().getValue());
+        }
         return repository.save(target);
     }
 

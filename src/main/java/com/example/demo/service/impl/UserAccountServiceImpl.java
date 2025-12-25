@@ -32,11 +32,12 @@ public class UserAccountServiceImpl implements UserAccountService {
         return repository.save(user);
     }
 
-    @Override
+   @Override
 public UserAccount findByEmailOrThrow(String email) {
     return repository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new BadRequestException("User not found"));
 }
+
 
     }
 
