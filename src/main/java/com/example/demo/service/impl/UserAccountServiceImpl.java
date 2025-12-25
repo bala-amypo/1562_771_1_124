@@ -12,8 +12,10 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccountServiceImpl(UserAccountRepository repository,
-                                  PasswordEncoder passwordEncoder) {
+    public UserAccountServiceImpl(
+            UserAccountRepository repository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -23,6 +25,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         if (repository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }

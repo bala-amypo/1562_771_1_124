@@ -18,7 +18,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ REQUIRED BY TESTS
     public AuthController(
             UserAccountService userAccountService,
             AuthenticationManager authenticationManager,
@@ -33,7 +32,6 @@ public class AuthController {
     public ResponseEntity<JwtResponse> register(
             @RequestBody RegisterRequest request
     ) {
-
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -47,23 +45,27 @@ public class AuthController {
                 saved.getRole()
         );
 
-        JwtResponse response = new JwtResponse(
-                saved.getEmail(),
-                saved.getRole(),
-                saved.getId(),
-                token
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        saved.getEmail(),
+                        saved.getRole(),
+                        saved.getId(),
+                        token
+                )
         );
-
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
             @RequestBody LoginRequest request
     ) {
+        UserAccount user;
 
-        UserAccount user =
-                userAccountService.findByEmailOrThrow(request.getEmail());
+        try {
+            user = userAccountService.findByEmailOrThrow(request.getEmail());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Unauthorized");
+        }
 
         if (!userAccountService.passwordMatches(
                 request.getPassword(),
@@ -78,13 +80,13 @@ public class AuthController {
                 user.getRole()
         );
 
-        JwtResponse response = new JwtResponse(
-                user.getEmail(),
-                user.getRole(),
-                user.getId(),
-                token
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getId(),
+                        token
+                )
         );
-
-        return ResponseEntity.ok(response);
     }
 }
