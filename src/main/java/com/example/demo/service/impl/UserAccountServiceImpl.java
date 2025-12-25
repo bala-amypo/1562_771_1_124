@@ -33,8 +33,11 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public UserAccount findByEmailOrThrow(String email) {
-        return repository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found"));
-    }
+    @Override
+public UserAccount findByEmailOrThrow(String email) {
+    return repository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 }
+
+    }
+

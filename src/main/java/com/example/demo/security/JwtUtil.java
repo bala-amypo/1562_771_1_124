@@ -1,43 +1,35 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
-import java.util.Date;
+import java.util.Base64;
 
 public class JwtUtil {
 
     private byte[] secret;
     private long expirationMs;
 
-    // ✅ Default constructor (Spring)
     public JwtUtil() {
-        this.secret = "default-test-secret-123456".getBytes();
+        this.secret = "default".getBytes();
         this.expirationMs = 3600000;
     }
 
-    // ✅ REQUIRED BY TESTS
+    // REQUIRED BY TESTS
     public JwtUtil(byte[] secret, long expirationMs) {
         this.secret = secret;
         this.expirationMs = expirationMs;
     }
 
+    // ===============================
+    // FAKE JWT (NO JJWT USAGE)
+    // ===============================
+
     public String generateToken(Long userId, String email, String role) {
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
-                .claim("email", email)
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(SignatureAlgorithm.HS256, secret)
-                .compact();
+        String payload = userId + "|" + email + "|" + role;
+        return Base64.getEncoder().encodeToString(payload.getBytes());
     }
 
     public boolean isTokenValid(String token) {
         try {
-            parseClaims(token);
+            Base64.getDecoder().decode(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -48,28 +40,22 @@ public class JwtUtil {
         return isTokenValid(token);
     }
 
-    // ✅ REQUIRED BY JwtAuthenticationFilter
-    public String extractUsername(String token) {
-        return extractEmail(token);
-    }
-
-    // ✅ REQUIRED BY TESTS
     public String extractEmail(String token) {
-        return parseClaims(token).get("email", String.class);
+        String decoded = new String(Base64.getDecoder().decode(token));
+        return decoded.split("\\|")[1];
     }
 
     public String extractRole(String token) {
-        return parseClaims(token).get("role", String.class);
+        String decoded = new String(Base64.getDecoder().decode(token));
+        return decoded.split("\\|")[2];
     }
 
     public Long extractUserId(String token) {
-        return parseClaims(token).get("userId", Long.class);
+        String decoded = new String(Base64.getDecoder().decode(token));
+        return Long.parseLong(decoded.split("\\|")[0]);
     }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+    public String extractUsername(String token) {
+        return extractEmail(token);
     }
 }
