@@ -17,12 +17,12 @@ public class JwtResponse {
     }
 
     // ✅ REQUIRED constructor (used by AuthController + tests)
-    public JwtResponse(Long userId, String email, String role, String token) {
-        this.userId = userId;
-        this.email = email;
-        this.role = role;
-        this.token = token;
-    }
+   public JwtResponse(String email, String role, Long userId, String token) {
+    this.userId = userId;
+    this.email = email;
+    this.role = role;
+    this.token = token;
+}
 
     // ===== GETTERS & SETTERS =====
 
