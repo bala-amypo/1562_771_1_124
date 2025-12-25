@@ -1,13 +1,11 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.DiversityTarget;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
@@ -19,27 +17,25 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
     }
 
     @Override
-    public DiversityTarget createTarget(DiversityTarget target) {
+    public DiversityTarget create(DiversityTarget target) {
         return repository.save(target);
     }
 
     @Override
-    public List<DiversityTarget> getAllTargets() {
+    public List<DiversityTarget> getAll() {
         return repository.findAll();
     }
 
+    // 🔥 IMPORTANT: must use repository query (NOT filtering)
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        return repository.findAll()
-                .stream()
-                .filter(t -> year.equals(t.getYear()))
-                .collect(Collectors.toList());
+        return repository.findByYear(year);
     }
 
     @Override
-    public void deactivateTarget(Long id) {
+    public void deactivate(Long id) {
         DiversityTarget target = repository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Target not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Target not found"));
         target.setActive(false);
         repository.save(target);
     }

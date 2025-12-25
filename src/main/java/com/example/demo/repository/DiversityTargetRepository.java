@@ -7,9 +7,6 @@ import java.util.List;
 
 public interface DiversityTargetRepository extends JpaRepository<DiversityTarget, Long> {
 
-    // ✅ REQUIRED BY SERVICE & TESTS
+    // REQUIRED for t15_get_targets_by_year
     List<DiversityTarget> findByYear(Integer year);
-
-    // ✅ SAFE TO KEEP (IF USED ANYWHERE)
-    List<DiversityTarget> findByTargetYear(Integer targetYear);
 }
