@@ -6,8 +6,8 @@ import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
 import org.springframework.stereotype.Service;
 
-import java.time.Year;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
@@ -20,10 +20,6 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
 
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
-        // ✅ REQUIRED FOR TEST
-        if (target.getYear() == null) {
-            target.setYear(Year.now().getValue());
-        }
         return repository.save(target);
     }
 
@@ -34,14 +30,16 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
 
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        return repository.findByYear(year);
+        return repository.findAll()
+                .stream()
+                .filter(t -> year.equals(t.getYear()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void deactivateTarget(Long id) {
         DiversityTarget target = repository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Target not found"));
-
         target.setActive(false);
         repository.save(target);
     }
