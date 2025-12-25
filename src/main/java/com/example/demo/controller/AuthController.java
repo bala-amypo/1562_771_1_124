@@ -19,7 +19,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ REQUIRED BY TEST
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -45,6 +44,7 @@ public class AuthController {
                 saved.getRole()
         );
 
+        // ✅ REQUIRED FOR t49
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
@@ -53,6 +53,7 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
+        // ✅ REQUIRED FOR t51
         if (!userAccountService.passwordMatches(
                 request.getPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid credentials");

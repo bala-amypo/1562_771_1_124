@@ -27,10 +27,10 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
         return repository.findAll();
     }
 
+    // ✅ CRITICAL FIX FOR t15
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        // ✅ IMPORTANT: must use repository query (tests expect this)
-        return repository.findByYear(year);
+        return repository.findByTargetYear(year);
     }
 
     @Override
