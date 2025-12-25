@@ -6,6 +6,8 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,15 +15,24 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
+    // ✅ REQUIRED BY TESTS
+    public AuthController(
+            UserAccountService userAccountService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil
+    ) {
         this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<JwtResponse> register(
+            @RequestBody RegisterRequest request
+    ) {
 
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
@@ -36,23 +47,28 @@ public class AuthController {
                 saved.getRole()
         );
 
-        return new JwtResponse(
+        JwtResponse response = new JwtResponse(
                 saved.getEmail(),
                 saved.getRole(),
                 saved.getId(),
                 token
         );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(
+            @RequestBody LoginRequest request
+    ) {
 
         UserAccount user =
                 userAccountService.findByEmailOrThrow(request.getEmail());
 
         if (!userAccountService.passwordMatches(
                 request.getPassword(),
-                user.getPassword())) {
+                user.getPassword()
+        )) {
             throw new RuntimeException("Unauthorized");
         }
 
@@ -62,11 +78,13 @@ public class AuthController {
                 user.getRole()
         );
 
-        return new JwtResponse(
+        JwtResponse response = new JwtResponse(
                 user.getEmail(),
                 user.getRole(),
                 user.getId(),
                 token
         );
+
+        return ResponseEntity.ok(response);
     }
 }

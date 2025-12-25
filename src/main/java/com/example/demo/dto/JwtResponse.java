@@ -7,12 +7,7 @@ public class JwtResponse {
     private String role;
     private String token;
 
-    public JwtResponse() {
-    }
-
-    public JwtResponse(String token) {
-        this.token = token;
-    }
+    public JwtResponse() {}
 
     public JwtResponse(String email, String role, Long userId, String token) {
         this.email = email;
