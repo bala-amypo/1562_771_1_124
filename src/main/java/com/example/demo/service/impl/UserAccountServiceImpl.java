@@ -29,13 +29,12 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount findByEmailOrThrow(String email) {
-        // ✅ EXACT behavior test expects
-        throw new RuntimeException("User not found");
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
     public boolean passwordMatches(String raw, String encoded) {
-        // ✅ TEST EXPECTS RAW COMPARISON
-        return raw.equals(encoded);
+        return passwordEncoder.matches(raw, encoded);
     }
 }

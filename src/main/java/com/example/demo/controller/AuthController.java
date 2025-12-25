@@ -18,73 +18,75 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(
-            UserAccountService userAccountService,
-            AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil
-    ) {
+    public AuthController(UserAccountService userAccountService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
-    // =====================
-    // REGISTER
-    // =====================
+    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
-        try {
-            UserAccount user = new UserAccount();
-            user.setFullName(request.getFullName());
-            user.setEmail(request.getEmail());
-            user.setPassword(request.getPassword());
-            user.setRole("USER");
+        UserAccount user = new UserAccount();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setRole("USER");
 
-            UserAccount saved = userAccountService.register(user);
+        UserAccount saved = userAccountService.register(user);
 
-            String token = jwtUtil.generateToken(
-                    saved.getId(),
-                    saved.getEmail(),
-                    saved.getRole()
-            );
+        // ✅ CORRECT PARAM ORDER
+        String token = jwtUtil.generateToken(
+                saved.getId(),
+                saved.getEmail(),
+                saved.getRole()
+        );
 
-            // ✅ TEST EXPECTS TOKEN ONLY
-            return ResponseEntity.ok(new JwtResponse(token));
-
-        } catch (RuntimeException e) {
-            // ✅ t50 expects controller to throw
-            throw e;
-        }
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        saved.getEmail(),
+                        saved.getRole(),
+                        saved.getId(),
+                        token
+                )
+        );
     }
 
-    // =====================
-    // LOGIN
-    // =====================
+    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
+        UserAccount user;
         try {
-            UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
-
-            if (!userAccountService.passwordMatches(
-                    request.getPassword(),
-                    user.getPassword()
-            )) {
-                throw new RuntimeException("Unauthorized");
-            }
-
-            String token = jwtUtil.generateToken(
-                    user.getId(),
-                    user.getEmail(),
-                    user.getRole()
-            );
-
-            return ResponseEntity.ok(new JwtResponse(token));
-
+            user = userAccountService.findByEmailOrThrow(request.getEmail());
         } catch (RuntimeException e) {
-            // ✅ BOTH invalid email & password → Unauthorized
             throw new RuntimeException("Unauthorized");
         }
+
+        if (!userAccountService.passwordMatches(
+                request.getPassword(),
+                user.getPassword()
+        )) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        // ✅ CORRECT PARAM ORDER
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getId(),
+                        token
+                )
+        );
     }
 }
