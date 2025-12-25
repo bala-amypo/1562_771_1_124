@@ -18,7 +18,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ EXACT constructor expected by tests
+    // ✅ EXACT constructor required by tests
     public AuthController(
             UserAccountService userAccountService,
             AuthenticationManager authenticationManager,
@@ -43,19 +43,20 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ JwtUtil expects: (Long, String, String)
+        // JwtUtil signature: (Long, String, String)
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
                 saved.getRole()
         );
 
-        // ✅ JwtResponse expects: (Long, String, String, String)
+        // ✅ JwtResponse order is:
+        // (String email, String role, Long userId, String token)
         return ResponseEntity.ok(
                 new JwtResponse(
-                        saved.getId(),
                         saved.getEmail(),
                         saved.getRole(),
+                        saved.getId(),
                         token
                 )
         );
@@ -85,9 +86,9 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 new JwtResponse(
-                        user.getId(),
                         user.getEmail(),
                         user.getRole(),
+                        user.getId(),
                         token
                 )
         );
