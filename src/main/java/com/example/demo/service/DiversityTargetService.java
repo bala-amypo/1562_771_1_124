@@ -1,15 +1,40 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.DiversityTarget;
+import com.example.demo.repository.DiversityTargetRepository;
+import com.example.demo.service.DiversityTargetService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public interface DiversityTargetService {
+@Service
+public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    DiversityTarget createTarget(DiversityTarget target);
+    private final DiversityTargetRepository repository;
 
-    List<DiversityTarget> getAllTargets();
+    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
+        this.repository = repository;
+    }
 
-    List<DiversityTarget> getTargetsByYear(Integer year);
+    @Override
+    public DiversityTarget createTarget(DiversityTarget target) {
+        return repository.save(target);
+    }
 
-    void deactivateTarget(Long id);
+    @Override
+    public List<DiversityTarget> getAllTargets() {
+        return repository.findAll();
+    }
+
+    @Override
+    public List<DiversityTarget> getTargetsByYear(Integer year) {
+        return repository.findByTargetYear(year);
+    }
+
+    @Override
+    public void deactivateTarget(Long id) {
+        DiversityTarget t = repository.findById(id).orElseThrow();
+        t.setActive(false);
+        repository.save(t);
+    }
 }
