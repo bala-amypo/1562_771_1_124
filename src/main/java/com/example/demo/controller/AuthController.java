@@ -32,13 +32,10 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ CONVERT String → Long (TEST EXPECTS Long)
-        Long userId = Long.valueOf(saved.getId());
-
         String token = jwtUtil.generateToken(
                 saved.getEmail(),
                 saved.getRole(),
-                userId
+                saved.getId()
         );
 
         return ResponseEntity.ok(new JwtResponse(token));
@@ -49,17 +46,15 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        if (!request.getPassword().equals(user.getPassword())) {
+        // ✅ USE passwordMatches (TEST EXPECTATION)
+        if (!userAccountService.passwordMatches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-
-        // ✅ CONVERT String → Long
-        Long userId = Long.valueOf(user.getId());
 
         String token = jwtUtil.generateToken(
                 user.getEmail(),
                 user.getRole(),
-                userId
+                user.getId()
         );
 
         return ResponseEntity.ok(new JwtResponse(token));
