@@ -6,6 +6,7 @@ import com.example.demo.repository.PurchaseOrderRepository;
 import com.example.demo.service.PurchaseOrderService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,19 +22,27 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     @Override
     public PurchaseOrder createPurchaseOrder(PurchaseOrder purchaseOrder) {
 
-        if (purchaseOrder.getAmount() <= 0) {
+        // ✅ amount must be positive
+        if (purchaseOrder.getAmount() == null ||
+                purchaseOrder.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BadRequestException("Amount must be positive");
         }
 
-        if (purchaseOrder.getOrderDate().isAfter(LocalDate.now())) {
+        // ✅ date must not be in future
+        if (purchaseOrder.getDateIssued() == null ||
+                purchaseOrder.getDateIssued().isAfter(LocalDate.now())) {
             throw new BadRequestException("Date cannot be in future");
         }
 
-        if (!purchaseOrder.getSupplier().getActive()) {
+        // ✅ supplier must be active
+        if (purchaseOrder.getSupplier() == null ||
+                Boolean.FALSE.equals(purchaseOrder.getSupplier().getIsActive())) {
             throw new BadRequestException("Inactive supplier");
         }
 
-        if (!purchaseOrder.getCategory().getActive()) {
+        // ✅ category must be active
+        if (purchaseOrder.getCategory() == null ||
+                Boolean.FALSE.equals(purchaseOrder.getCategory().getActive())) {
             throw new BadRequestException("Inactive category");
         }
 
