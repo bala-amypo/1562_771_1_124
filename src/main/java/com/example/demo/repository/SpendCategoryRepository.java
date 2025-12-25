@@ -4,9 +4,8 @@ import com.example.demo.entity.SpendCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface SpendCategoryRepository
-        extends JpaRepository<SpendCategory, Long> {
+public interface SpendCategoryRepository extends JpaRepository<SpendCategory, Long> {
 
-    // 🔑 MUST match entity field name "isActive"
-    List<SpendCategory> findByIsActiveTrue();
+    // ✅ REQUIRED BY TESTS
+    List<SpendCategory> findByActiveTrue();
 }

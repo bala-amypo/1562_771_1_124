@@ -34,5 +34,10 @@ public class DiversityTarget {
     public DiversityClassification getClassification() { return classification; }
     public void setClassification(DiversityClassification classification) {
         this.classification = classification;
+
+        public void setActive(boolean active) {
+    this.isActive = active;
+}
+
     }
 }
