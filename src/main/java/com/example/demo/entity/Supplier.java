@@ -1,11 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
+@Table(name = "suppliers")
 public class Supplier {
 
     @Id
@@ -13,48 +11,39 @@ public class Supplier {
     private Long id;
 
     private String name;
-    private String email;
-    private String registrationNumber;
+
     private Boolean isActive = true;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // ===== GETTERS =====
 
-    @ManyToMany
-    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
-
-    @PrePersist
-    public void preSave() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public Long getId() {
+        return id;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
+    public String getName() {
+        return name;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getRegistrationNumber() { return registrationNumber; }
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
+    public Boolean getIsActive() {
+        return isActive;
     }
 
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean active) { this.isActive = active; }
+    // ===== SETTERS =====
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Set<DiversityClassification> getDiversityClassifications() {
-        return diversityClassifications;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIsActive(Boolean active) {
+        this.isActive = active;
+    }
+
+    // ✅ REQUIRED BY SERVICE & TESTS
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
