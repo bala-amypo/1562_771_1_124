@@ -9,9 +9,9 @@ import java.util.Date;
 public class JwtUtil {
 
     private final String secret = "my-secret-key-my-secret-key";
-    private final long expirationMs = 3600000;
+    private long expirationMs = 3600000;
 
-    // REQUIRED BY TESTS
+    // REQUIRED BY SPRING
     public JwtUtil() {
     }
 
@@ -20,7 +20,6 @@ public class JwtUtil {
         this.expirationMs = expirationMs;
     }
 
-    // REQUIRED BY CONTROLLER
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .claim("userId", userId)
@@ -32,7 +31,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // REQUIRED BY FILTER
     public boolean isTokenValid(String token) {
         try {
             Jwts.parser()

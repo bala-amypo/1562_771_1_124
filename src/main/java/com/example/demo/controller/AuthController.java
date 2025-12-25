@@ -23,6 +23,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+
         UserAccount user = new UserAccount();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
@@ -37,11 +38,19 @@ public class AuthController {
                 user.getRole()
         );
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getRole(),
+                        token
+                )
+        );
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+
         UserAccount user = userService.findByEmailOrThrow(request.getEmail());
 
         if (!user.getPassword().equals(request.getPassword())) {
@@ -54,7 +63,14 @@ public class AuthController {
                 user.getRole()
         );
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getRole(),
+                        token
+                )
+        );
     }
 
     @GetMapping("/test")
