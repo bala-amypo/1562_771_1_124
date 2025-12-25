@@ -1,63 +1,74 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.security.Keys;
 
+import java.security.Key;
 import java.util.Date;
 
-@Component
 public class JwtUtil {
 
-    private byte[] secret;
-    private long expiration;
+    private final Key key;
+    private final long expirationMs;
 
-    // ✅ REQUIRED BY TESTS
+    // REQUIRED BY TESTS
     public JwtUtil() {
-        this.secret = "secret-key".getBytes();
-        this.expiration = 1000 * 60 * 60;
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        this.expirationMs = 3600000;
     }
 
-    // ✅ REQUIRED BY TESTS
-    public JwtUtil(byte[] secret, long expiration) {
-        this.secret = secret;
-        this.expiration = expiration;
+    // REQUIRED BY TESTS
+    public JwtUtil(byte[] secret, long expirationMs) {
+        this.key = Keys.hmacShaKeyFor(secret);
+        this.expirationMs = expirationMs;
     }
 
+    // USED BY CONTROLLER
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
-                .setSubject(email)
                 .claim("userId", userId)
+                .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(key)
                 .compact();
     }
 
-    public String extractEmail(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public String extractRole(String token) {
-        return getClaims(token).get("role", String.class);
-    }
-
-    public Long extractUserId(String token) {
-        return getClaims(token).get("userId", Long.class);
-    }
-
-    public boolean validateToken(String token) {
+    // USED BY FILTER
+    public boolean isTokenValid(String token) {
         try {
-            getClaims(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException e) {
             return false;
         }
     }
 
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+    public boolean validateToken(String token) {
+        return isTokenValid(token);
+    }
+
+    public String extractUsername(String token) {
+        return extractEmail(token);
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token).get("email", String.class);
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
