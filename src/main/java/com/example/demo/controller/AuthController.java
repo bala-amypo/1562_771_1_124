@@ -43,11 +43,11 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ CORRECT ORDER
+        // ✅ MATCH JwtUtil SIGNATURE EXACTLY
         String token = jwtUtil.generateToken(
-                saved.getId(),
-                saved.getEmail(),
-                saved.getRole()
+                saved.getEmail(),   // String
+                saved.getRole(),    // String
+                saved.getId()       // Long
         );
 
         return ResponseEntity.ok(
@@ -76,11 +76,11 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // ✅ CORRECT ORDER
+        // ✅ SAME CORRECT ORDER
         String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
+                user.getEmail(),   // String
+                user.getRole(),    // String
+                user.getId()       // Long
         );
 
         return ResponseEntity.ok(
