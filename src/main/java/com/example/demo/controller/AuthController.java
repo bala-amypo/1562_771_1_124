@@ -43,11 +43,11 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ MATCH JwtUtil SIGNATURE
+        // ✅ MATCH JwtUtil SIGNATURE (Long, String, String)
         String token = jwtUtil.generateToken(
-                saved.getEmail(),   // String
-                saved.getRole(),    // String
-                saved.getId()       // Long
+                saved.getId(),        // Long
+                saved.getEmail(),     // String
+                saved.getRole()       // String
         );
 
         // ✅ MATCH JwtResponse CONSTRUCTOR
@@ -78,9 +78,9 @@ public class AuthController {
         }
 
         String token = jwtUtil.generateToken(
-                user.getEmail(),   // String
-                user.getRole(),    // String
-                user.getId()       // Long
+                user.getId(),        // Long
+                user.getEmail(),     // String
+                user.getRole()       // String
         );
 
         return ResponseEntity.ok(
