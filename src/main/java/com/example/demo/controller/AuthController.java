@@ -43,20 +43,19 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
-        // ✅ MATCH JwtUtil SIGNATURE (Long, String, String)
+        // ✅ CORRECT ORDER
         String token = jwtUtil.generateToken(
                 saved.getId(),        // Long
                 saved.getEmail(),     // String
                 saved.getRole()       // String
         );
 
-        // ✅ MATCH JwtResponse CONSTRUCTOR
         return ResponseEntity.ok(
                 new JwtResponse(
-                        saved.getId(),     // Long
-                        saved.getEmail(),  // String
-                        saved.getRole(),   // String
-                        token              // String
+                        saved.getId(),
+                        saved.getEmail(),
+                        saved.getRole(),
+                        token
                 )
         );
     }
@@ -77,6 +76,7 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
+        // ✅ CORRECT ORDER
         String token = jwtUtil.generateToken(
                 user.getId(),        // Long
                 user.getEmail(),     // String
@@ -85,10 +85,10 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 new JwtResponse(
-                        user.getId(),      // Long
-                        user.getEmail(),   // String
-                        user.getRole(),    // String
-                        token              // String
+                        user.getId(),
+                        user.getEmail(),
+                        user.getRole(),
+                        token
                 )
         );
     }
