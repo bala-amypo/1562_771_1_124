@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager; // REQUIRED
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ EXACT CONSTRUCTOR EXPECTED BY TESTS
+    // ✅ EXACT constructor expected by tests
     public AuthController(
             UserAccountService userAccountService,
             AuthenticationManager authenticationManager,
@@ -29,6 +29,9 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    // =========================
+    // REGISTER
+    // =========================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -46,13 +49,25 @@ public class AuthController {
                 saved.getId()
         );
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        // ✅ ORDER MATCHES TEST: (email, role, userId, token)
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        saved.getEmail(),
+                        saved.getRole(),
+                        saved.getId(),
+                        token
+                )
+        );
     }
 
+    // =========================
+    // LOGIN
+    // =========================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
-        UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+        UserAccount user =
+                userAccountService.findByEmailOrThrow(request.getEmail());
 
         if (!userAccountService.passwordMatches(
                 request.getPassword(),
@@ -67,6 +82,14 @@ public class AuthController {
                 user.getId()
         );
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        // ✅ ORDER MATCHES TEST
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getId(),
+                        token
+                )
+        );
     }
 }
