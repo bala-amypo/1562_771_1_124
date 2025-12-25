@@ -3,13 +3,19 @@ package com.example.demo.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
         resp.setContentType("text/plain");
-        resp.getWriter().write("OK");
+
+        PrintWriter writer = resp.getWriter();
+        writer.write("Supplier Diversity Tracker is running");
+        writer.flush(); // ✅ REQUIRED by test
     }
 }
