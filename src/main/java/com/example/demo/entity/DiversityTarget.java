@@ -3,41 +3,55 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "diversity_targets")
 public class DiversityTarget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer targetYear;
-    private Double targetPercentage;
+    private Integer year;
+
+    private Double percentage;
+
     private Boolean isActive = true;
 
-    @ManyToOne
-    private DiversityClassification classification;
+    // ===== GETTERS =====
+    public Long getId() {
+        return id;
+    }
 
-    @PrePersist
-    public void preSave() {}
+    public Integer getYear() {
+        return year;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Double getPercentage() {
+        return percentage;
+    }
 
-    public Integer getTargetYear() { return targetYear; }
-    public void setTargetYear(Integer targetYear) { this.targetYear = targetYear; }
+    public Boolean getIsActive() {
+        return isActive;
+    }
 
-    public Double getTargetPercentage() { return targetPercentage; }
-    public void setTargetPercentage(Double targetPercentage) { this.targetPercentage = targetPercentage; }
+    // ===== SETTERS =====
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Boolean getActive() { return isActive; }
-    public void setIsActive(Boolean active) { this.isActive = active; }
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 
-    public DiversityClassification getClassification() { return classification; }
-    public void setClassification(DiversityClassification classification) {
-        this.classification = classification;
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
 
-        public void setActive(boolean active) {
-    this.isActive = active;
-}
+    public void setIsActive(Boolean active) {
+        this.isActive = active;
+    }
 
+    // REQUIRED BY TESTS
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
