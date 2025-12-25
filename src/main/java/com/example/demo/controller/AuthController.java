@@ -7,6 +7,7 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
         user.setFullName(request.getFullName());
@@ -44,15 +45,16 @@ public class AuthController {
                 saved.getRole()
         );
 
-        return new JwtResponse(token);
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        if (!userAccountService.passwordMatches(request.getPassword(), user.getPassword())) {
+        if (!userAccountService.passwordMatches(
+                request.getPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid credentials");
         }
 
@@ -62,7 +64,7 @@ public class AuthController {
                 user.getRole()
         );
 
-        return new JwtResponse(token);
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @GetMapping("/test")
