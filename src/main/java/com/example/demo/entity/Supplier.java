@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -13,33 +14,49 @@ public class Supplier {
     private Long id;
 
     private String name;
-
-    @Column(unique = true)
     private String email;
-
     private String registrationNumber;
 
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @ManyToMany
-    private Set<DiversityClassification> diversityClassifications;
+    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
     @PrePersist
-    public void prePersist() {
-        if (isActive == null) isActive = true;
-        if (createdAt == null) createdAt = LocalDateTime.now();
+    public void preSave() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
-    // ✅ REQUIRED
-    public void setActive(boolean active) {
-        this.isActive = active;
+    // ===== Getters & Setters =====
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getRegistrationNumber() { return registrationNumber; }
+    public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public Set<DiversityClassification> getDiversityClassifications() {
+        return diversityClassifications;
     }
 }

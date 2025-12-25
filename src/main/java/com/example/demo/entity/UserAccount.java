@@ -1,69 +1,39 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_accounts")
 public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
-
-    @Column(unique = true, nullable = false)
     private String email;
-
     private String password;
-
     private String role;
+    private String name;
 
-    private boolean active = true;
+    private LocalDateTime createdAt;
 
     public UserAccount() {}
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
+    public UserAccount(Long id, String email, String password, String role, String name) {
+        this.id = id;
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
         this.role = role;
+        this.name = name;
     }
 
-    public boolean isActive() {
-        return active;
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public Long getId() { return id; }
+    public String getEmail() { return email; }
+    public String getRole() { return role; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }
