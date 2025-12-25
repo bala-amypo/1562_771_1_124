@@ -43,18 +43,18 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
+        // ✅ CORRECT ORDER
         String token = jwtUtil.generateToken(
+                saved.getId(),
                 saved.getEmail(),
-                saved.getRole(),
-                saved.getId()
+                saved.getRole()
         );
 
-        // ✅ ORDER MATCHES TEST: (email, role, userId, token)
         return ResponseEntity.ok(
                 new JwtResponse(
+                        saved.getId(),
                         saved.getEmail(),
                         saved.getRole(),
-                        saved.getId(),
                         token
                 )
         );
@@ -76,18 +76,18 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
+        // ✅ CORRECT ORDER
         String token = jwtUtil.generateToken(
+                user.getId(),
                 user.getEmail(),
-                user.getRole(),
-                user.getId()
+                user.getRole()
         );
 
-        // ✅ ORDER MATCHES TEST
         return ResponseEntity.ok(
                 new JwtResponse(
+                        user.getId(),
                         user.getEmail(),
                         user.getRole(),
-                        user.getId(),
                         token
                 )
         );

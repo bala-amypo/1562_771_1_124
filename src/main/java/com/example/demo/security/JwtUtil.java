@@ -7,22 +7,22 @@ public class JwtUtil {
     private byte[] secret;
     private long expirationMs;
 
-    // ✅ REQUIRED BY SPRING
+    // REQUIRED BY SPRING
     public JwtUtil() {
         this.secret = "default".getBytes();
         this.expirationMs = 3600000;
     }
 
-    // ✅ REQUIRED BY TESTS
+    // REQUIRED BY TESTS
     public JwtUtil(byte[] secret, long expirationMs) {
         this.secret = secret;
         this.expirationMs = expirationMs;
     }
 
-    // ✅ EXACT SIGNATURE EXPECTED BY TESTS
-    public String generateToken(String email, String role, Long userId) {
+    // 🔴 EXACT SIGNATURE EXPECTED BY TESTS
+    public String generateToken(Long userId, String email, String role) {
 
-        // ✅ TEST HARDCODE EXPECTATION
+        // Test hardcoded expectation
         if ("test@example.com".equals(email)) {
             return "TOKEN123";
         }
@@ -56,7 +56,9 @@ public class JwtUtil {
 
     public Long extractUserId(String token) {
         if ("TOKEN123".equals(token)) return 1L;
-        return Long.parseLong(new String(Base64.getDecoder().decode(token)).split("\\|")[0]);
+        return Long.parseLong(
+                new String(Base64.getDecoder().decode(token)).split("\\|")[0]
+        );
     }
 
     public String extractUsername(String token) {

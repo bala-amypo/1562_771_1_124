@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "diversity_classifications")
 public class DiversityClassification {
 
     @Id
@@ -10,28 +11,22 @@ public class DiversityClassification {
     private Long id;
 
     private String code;
+
     private String description;
-    private Boolean active;
 
-    // ✅ THIS FIELD WAS MISSING
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+    private Boolean active = true;
 
-    @PrePersist
-    public void prePersist() {
-        if (active == null) {
-            active = true;
-        }
-        if (code != null) {
-            code = code.toUpperCase();
-        }
-    }
-
-    // ===== GETTERS & SETTERS =====
+    // ========================
+    // REQUIRED BY TESTS
+    // ========================
 
     public Long getId() {
         return id;
+    }
+
+    // 🔴 REQUIRED: tests call setId(long)
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCode() {
@@ -58,11 +53,14 @@ public class DiversityClassification {
         this.active = active;
     }
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
+    // 🔴 REQUIRED: tests call preSave() manually
+    @PrePersist
+    public void preSave() {
+        if (active == null) {
+            active = true;
+        }
+        if (code != null) {
+            code = code.toUpperCase();
+        }
     }
 }
