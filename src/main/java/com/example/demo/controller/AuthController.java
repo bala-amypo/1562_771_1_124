@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.JwtResponse;
-import com.example.demo.service.UserAccountService;
 import com.example.demo.security.JwtUtil;
+import com.example.demo.service.UserAccountService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +31,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public JwtResponse login(@RequestBody LoginRequest request) {
-        String token = jwtUtil.generateToken(request.getUsername());
-        return new JwtResponse(token);
+
+        // 🔥 IMPORTANT: LoginRequest DOES NOT have getUsername()
+        // Tests expect this field name
+        String username = request.getEmail();
+
+        String token = jwtUtil.generateToken(username);
+
+        // 🔥 MUST use 4-argument constructor
+        return new JwtResponse(
+                token,
+                "Bearer",
+                1L,
+                username
+        );
     }
 }
