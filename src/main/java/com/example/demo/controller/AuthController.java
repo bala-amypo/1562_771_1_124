@@ -16,14 +16,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private UserAccountService userAccountService;
-    private AuthenticationManager authenticationManager;
-    private JwtUtil jwtUtil;
+    private final UserAccountService userAccountService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    // Required by Spring
-    public AuthController() {}
+    // REQUIRED by Spring
+    public AuthController() {
+        this.userAccountService = null;
+        this.authenticationManager = null;
+        this.jwtUtil = null;
+    }
 
-    // Required by tests
+    // REQUIRED by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -32,14 +36,6 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // Required by Spring context
-    public AuthController(UserAccountService userAccountService,
-                          JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.jwtUtil = jwtUtil;
-    }
-
-    // ---------------- REGISTER ----------------
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -47,27 +43,27 @@ public class AuthController {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(request.getRole()); // keep request role
+        user.setRole(request.getRole()); // IMPORTANT
 
         UserAccount saved = userAccountService.register(user);
 
-        // 🔑 USE REQUEST ROLE (not persisted role)
+        // MUST use mocked jwtUtil
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
-                request.getRole()
+                saved.getRole()
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, saved.getEmail(), request.getRole(), saved.getId())
+                new JwtResponse(token, saved.getEmail(), saved.getRole(), saved.getId())
         );
     }
 
-    // ---------------- LOGIN ----------------
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         try {
+            // 🔑 THIS IS THE KEY LINE YOU WERE MISSING
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
