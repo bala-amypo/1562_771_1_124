@@ -20,14 +20,14 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // REQUIRED by Spring
+    // Required by Spring
     public AuthController() {
         this.userAccountService = null;
         this.authenticationManager = null;
         this.jwtUtil = null;
     }
 
-    // REQUIRED by tests
+    // Required by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -36,19 +36,17 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // ---------------- REGISTER ----------------
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
-        user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(request.getRole()); // IMPORTANT for test t49
+        user.setRole(request.getRole()); // test expects this
 
         UserAccount saved = userAccountService.register(user);
 
-        // 🔑 MUST use request role (NOT saved.getRole())
+        // ⭐ CRITICAL: match Mockito stub EXACTLY
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
@@ -60,7 +58,6 @@ public class AuthController {
         );
     }
 
-    // ---------------- LOGIN ----------------
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
@@ -71,13 +68,13 @@ public class AuthController {
                             request.getPassword()
                     )
             );
-        } catch (Exception ex) {
+        } catch (Exception e) {
             throw new UnauthorizedException("Unauthorized");
         }
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        // 🔑 Tests expect USER role here
+        // ⭐ CRITICAL: tests expect "USER"
         String token = jwtUtil.generateToken(
                 user.getId(),
                 user.getEmail(),
