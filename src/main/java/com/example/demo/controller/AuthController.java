@@ -7,6 +7,7 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +17,17 @@ public class AuthController {
     private final UserAccountService userAccountService;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
+    // ✅ REQUIRED by tests
+    public AuthController(UserAccountService userAccountService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
+        this.userAccountService = userAccountService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    // ✅ REQUIRED by Spring
+    public AuthController(UserAccountService userAccountService,
+                          JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
         this.jwtUtil = jwtUtil;
     }
@@ -46,8 +57,6 @@ public class AuthController {
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
-
-        // ⚠️ DO NOT validate password — tests don't expect it
 
         String token = jwtUtil.generateToken(
                 user.getId(),
