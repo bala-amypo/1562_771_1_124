@@ -2,9 +2,10 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "suppliers")
 public class Supplier {
 
     @Id
@@ -12,38 +13,52 @@ public class Supplier {
     private Long id;
 
     private String name;
-    private String email;
-
-    private boolean active;
+    private String registrationNumber;
+    private boolean active = true;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiversityClassification> diversityClassifications = new ArrayList<>();
+
+    // ================= LIFECYCLE =================
     @PrePersist
-    public void prePersist() {
+    public void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.active = true;
     }
 
-    // ---------- ID ----------
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ================= GETTERS & SETTERS =================
+
     public Long getId() {
         return id;
     }
 
-    // required by tests
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    // ---------- EMAIL ----------
-    public String getEmail() {
-        return email;
+    public String getName() {
+        return name;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    // ---------- ACTIVE (tests + services BOTH) ----------
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
     public boolean getActive() {
         return active;
     }
@@ -52,12 +67,24 @@ public class Supplier {
         this.active = active;
     }
 
-    // aliases expected by tests
-    public boolean getIsActive() {
-        return active;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setIsActive(boolean active) {
-        this.active = active;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<DiversityClassification> getDiversityClassifications() {
+        return diversityClassifications;
+    }
+
+    public void setDiversityClassifications(
+            List<DiversityClassification> diversityClassifications) {
+        this.diversityClassifications = diversityClassifications;
     }
 }
