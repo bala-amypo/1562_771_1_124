@@ -18,45 +18,52 @@ public class Supplier {
     private String registrationNumber;
 
     @Column(nullable = false)
-    private Boolean active;
+    private boolean active;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
-        name = "supplier_classifications",
-        joinColumns = @JoinColumn(name = "supplier_id"),
-        inverseJoinColumns = @JoinColumn(name = "classification_id")
+            name = "supplier_classifications",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "classification_id")
     )
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
-    // ===== REQUIRED BY TESTS =====
+    // ================= REQUIRED BY TESTS =================
 
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        active = true;
     }
 
-    public Boolean getIsActive() {
+    // Test expects BOTH naming styles
+    public boolean getActive() {
         return active;
+    }
+
+    public boolean getIsActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void setIsActive(boolean active) {
         this.active = active;
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (active == null) {
-            active = true;
-        }
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
+    // REQUIRED setter
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
     }
 
-    // ===== GETTERS & SETTERS =====
+    // ================= GETTERS / SETTERS =================
 
     public Long getId() {
         return id;
@@ -66,11 +73,27 @@ public class Supplier {
         return name;
     }
 
-    public Set<DiversityClassification> getDiversityClassifications() {
-        return diversityClassifications;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<DiversityClassification> getDiversityClassifications() {
+        return diversityClassifications;
     }
 }

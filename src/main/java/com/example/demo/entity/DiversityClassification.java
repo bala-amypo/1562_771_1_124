@@ -10,36 +10,52 @@ public class DiversityClassification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String code;
 
-    private Boolean active;
+    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    // ===== REQUIRED BY TESTS =====
+    // ================= REQUIRED BY TESTS =================
 
+    @PrePersist
     public void preSave() {
-        if (active == null) {
-            active = true;
-        }
+        active = true;
         if (code != null) {
             code = code.toUpperCase();
         }
     }
 
-    public Boolean getActive() {
+    public boolean getActive() {
         return active;
     }
 
-    // ===== GETTERS & SETTERS =====
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    // ================= GETTERS / SETTERS =================
 
     public Long getId() {
         return id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 }
