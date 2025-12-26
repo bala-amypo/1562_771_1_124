@@ -12,6 +12,7 @@ public class DiversityClassification {
     private String code;
     private String description;
 
+    // primitive boolean → default false, we set true explicitly
     private boolean active = true;
 
     @ManyToOne
@@ -44,7 +45,7 @@ public class DiversityClassification {
         this.description = description;
     }
 
-    // 🔥 REQUIRED BY SERVICE
+    // REQUIRED BY SERVICES & TESTS
     public boolean getActive() {
         return active;
     }
@@ -56,15 +57,14 @@ public class DiversityClassification {
     public Supplier getSupplier() {
         return supplier;
     }
- @PrePersist
-public void preSave() {
-    if (this.active == null) {
-        this.active = true;
-    }
-}
 
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
+    }
 
+    // REQUIRED BY TESTS (method name matters)
+    @PrePersist
+    public void preSave() {
+        this.active = true;
     }
 }
