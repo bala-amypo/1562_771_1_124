@@ -7,7 +7,6 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,19 +16,13 @@ public class AuthController {
     private final UserAccountService userAccountService;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.jwtUtil = jwtUtil;
-    }
-}
-
-
-    // ✅ ALSO KEEP THIS (Spring uses it)
+    // ✅ SINGLE CONSTRUCTOR (Spring + Tests both accept this)
     public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
         this.jwtUtil = jwtUtil;
     }
 
+    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -51,6 +44,7 @@ public class AuthController {
         );
     }
 
+    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
