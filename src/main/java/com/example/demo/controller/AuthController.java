@@ -22,28 +22,41 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
-        // ✅ register returns UserAccount (tests expect this)
-        UserAccount user = userAccountService.register(request);
+        // Convert DTO → Entity (service expects UserAccount)
+        UserAccount user = new UserAccount();
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setRole("USER");
+
+        UserAccount saved = userAccountService.register(user);
 
         String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
+                saved.getId(),
+                saved.getEmail(),
+                saved.getRole()
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, "Bearer", user.getId(), user.getRole())
+                new JwtResponse(token, "Bearer", saved.getId(), saved.getRole())
         );
     }
 
+    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
-        // ✅ authenticate returns UserAccount
-        UserAccount user = userAccountService.authenticate(request);
+        UserAccount user =
+                userAccountService.findByEmailOrThrow(request.getEmail());
+
+        if (!userAccountService.passwordMatches(
+                request.getPassword(),
+                user.getPassword())) {
+            throw new RuntimeException("Unauthorized");
+        }
 
         String token = jwtUtil.generateToken(
                 user.getId(),
