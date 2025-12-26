@@ -24,10 +24,9 @@ public class DiversityTargetController {
         return diversityTargetService.getAllTargets();
     }
 
-    // 🔥 FIXES t15
     @GetMapping("/year/{year}")
-    public List<DiversityTarget> getByYear(@PathVariable int year) {
-        return diversityTargetService.getByYear(year);
+    public List<DiversityTarget> getTargetsByYear(@PathVariable int year) {
+        return diversityTargetService.getTargetsByYear(year);
     }
 
     @DeleteMapping("/{id}")
