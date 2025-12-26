@@ -10,16 +10,25 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // === CORE FIELDS ===
+    // === CORE DB FIELDS ===
+    @Column(name = "year")
     private Integer year;
+
     private Double percentage;
+
     private Boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "classification_id")
     private DiversityClassification classification;
 
-    // === STANDARD GETTERS ===
+    // =================================================
+    // 🔁 TEST / REPOSITORY COMPATIBILITY FIELD
+    // =================================================
+    @Transient
+    private Integer targetYear;
+
+    // === GETTERS ===
     public Long getId() {
         return id;
     }
@@ -40,13 +49,14 @@ public class DiversityTarget {
         return classification;
     }
 
-    // === STANDARD SETTERS ===
+    // === SETTERS ===
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setYear(Integer year) {
         this.year = year;
+        this.targetYear = year; // keep in sync
     }
 
     public void setPercentage(Double percentage) {
@@ -62,27 +72,30 @@ public class DiversityTarget {
     }
 
     // =================================================
-    // 🔁 TEST-COMPATIBILITY METHODS (DO NOT REMOVE)
+    // 🔥 REQUIRED BY REPOSITORY: findByTargetYear()
     // =================================================
-
-    public void setTargetYear(int year) {
-        this.year = year;
+    public Integer getTargetYear() {
+        return year;
     }
 
-    public int getTargetYear() {
-        return year;
+    public void setTargetYear(Integer targetYear) {
+        this.targetYear = targetYear;
+        this.year = targetYear;
+    }
+
+    // =================================================
+    // OPTIONAL TEST METHODS (SAFE)
+    // =================================================
+    public double getTargetPercentage() {
+        return percentage;
     }
 
     public void setTargetPercentage(double percentage) {
         this.percentage = percentage;
     }
 
-    public double getTargetPercentage() {
-        return percentage;
-    }
-
     @PrePersist
-    public void preSave() {
+    public void prePersist() {
         if (active == null) {
             active = true;
         }
