@@ -6,26 +6,33 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth") // ✅ MUST BE THIS
 public class AuthController {
 
-    private UserAccountService userAccountService;
-    private JwtUtil jwtUtil;
+    private final UserAccountService userAccountService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    // ✅ REQUIRED for Spring + Tests
-    public AuthController() {
+    // ✅ REQUIRED FOR TESTS
+    public AuthController(UserAccountService userAccountService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
+        this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    @Autowired
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.jwtUtil = jwtUtil;
+    // ✅ REQUIRED FOR SPRING
+    public AuthController() {
+        this.userAccountService = null;
+        this.authenticationManager = null;
+        this.jwtUtil = null;
     }
 
     @PostMapping("/register")
@@ -45,7 +52,7 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, "Bearer", saved.getId(), saved.getEmail())
+                new JwtResponse(token, saved.getEmail(), saved.getRole(), saved.getId())
         );
     }
 
@@ -54,7 +61,9 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        if (!userAccountService.matchesPassword(request.getPassword(), user.getPassword())) {
+        if (!userAccountService.matchesPassword(
+                request.getPassword(),
+                user.getPassword())) {
             throw new AccessDeniedException("Invalid credentials");
         }
 
@@ -65,7 +74,7 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, "Bearer", user.getId(), user.getEmail())
+                new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
         );
     }
 }
