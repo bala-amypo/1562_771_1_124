@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.DiversityTarget;
-
 import java.util.List;
 
 public interface DiversityTargetService {
@@ -10,7 +9,7 @@ public interface DiversityTargetService {
 
     List<DiversityTarget> getTargetsByYear(Integer year);
 
-    List<DiversityTarget> getAllTargets();   // ✅ REQUIRED BY CONTROLLER
+    List<DiversityTarget> getAllTargets();
 
     void deactivateTarget(Long id);
 }

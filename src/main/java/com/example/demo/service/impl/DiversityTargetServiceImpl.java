@@ -10,43 +10,37 @@ import java.util.List;
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    private final DiversityTargetRepository diversityTargetRepository;
+    private final DiversityTargetRepository repository;
 
-    public DiversityTargetServiceImpl(DiversityTargetRepository diversityTargetRepository) {
-        this.diversityTargetRepository = diversityTargetRepository;
+    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
+        this.repository = repository;
     }
 
+    // ✅ CREATE
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
-        return diversityTargetRepository.save(target);
+        return repository.save(target);
     }
 
+    // ✅ GET BY YEAR
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        // 🔥 MUST MATCH REPOSITORY METHOD
-        return diversityTargetRepository.findByYear(year);
+        return repository.findByYear(year);
     }
 
+    // ✅ GET ALL (THIS WAS MISSING ❌)
     @Override
-    public DiversityTarget getTargetById(Long id) {
-        return diversityTargetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Target not found"));
+    public List<DiversityTarget> getAllTargets() {
+        return repository.findAll();
     }
 
-    @Override
-    public DiversityTarget updateTarget(Long id, DiversityTarget target) {
-        DiversityTarget existing = getTargetById(id);
-        existing.setYear(target.getYear());
-        existing.setPercentage(target.getPercentage());
-        existing.setActive(target.getActive());
-        existing.setClassification(target.getClassification());
-        return diversityTargetRepository.save(existing);
-    }
-
+    // ✅ DEACTIVATE
     @Override
     public void deactivateTarget(Long id) {
-        DiversityTarget target = getTargetById(id);
+        DiversityTarget target = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Target not found"));
+
         target.setActive(false);
-        diversityTargetRepository.save(target);
+        repository.save(target);
     }
 }
