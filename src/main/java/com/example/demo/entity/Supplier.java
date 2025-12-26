@@ -2,8 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Supplier {
@@ -25,14 +25,14 @@ public class Supplier {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DiversityClassification> diversityClassifications = new ArrayList<>();
+    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
-    // ================= REQUIRED BY TEST (DIRECT CALL) =================
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.isActive == null) {
-            this.isActive = true;
+        this.updatedAt = LocalDateTime.now();
+        if (isActive == null) {
+            isActive = true;
         }
     }
 
@@ -41,7 +41,7 @@ public class Supplier {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ================= GETTERS & SETTERS (TEST EXPECTED NAMES) =================
+    // ---------- GETTERS & SETTERS ----------
 
     public Long getId() {
         return id;
@@ -59,16 +59,6 @@ public class Supplier {
         this.name = name;
     }
 
-    // ✅ REQUIRED
-    public String getEmail() {
-        return email;
-    }
-
-    // ✅ REQUIRED
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getRegistrationNumber() {
         return registrationNumber;
     }
@@ -77,22 +67,20 @@ public class Supplier {
         this.registrationNumber = registrationNumber;
     }
 
-    // ✅ TEST EXPECTS isActive NAMING (NOT getActive)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    // Compatibility for service layer
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        this.isActive = active;
+    public void setIsActive(Boolean active) {
+        isActive = active;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -103,15 +91,11 @@ public class Supplier {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<DiversityClassification> getDiversityClassifications() {
+    public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
     }
 
-    public void setDiversityClassifications(List<DiversityClassification> diversityClassifications) {
+    public void setDiversityClassifications(Set<DiversityClassification> diversityClassifications) {
         this.diversityClassifications = diversityClassifications;
     }
 }

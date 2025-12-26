@@ -3,44 +3,51 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "diversity_classification")
 public class DiversityClassification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
     private String code;
-    private boolean active;
 
-    @PrePersist
-    public void preSave() {
-        this.active = true;
-    }
+    private String description;
 
-    // ✅ REQUIRED BY TESTS
-    public void setId(long id) {
-        this.id = id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
+    // ---------- GETTERS & SETTERS ----------
 
     public Long getId() {
         return id;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public boolean getActive() {
-        return active;
+    public String getCode() {
+        return code;
     }
 
     public void setCode(String code) {
         this.code = code;
     }
 
-    public String getCode() {
-        return code;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 }
