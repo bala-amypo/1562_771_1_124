@@ -7,6 +7,7 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,15 +15,26 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ SINGLE CONSTRUCTOR (Spring + Tests both accept this)
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
+    // REQUIRED BY TESTS
+    public AuthController(UserAccountService userAccountService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
-    // ================= REGISTER =================
+    // REQUIRED BY SPRING
+    public AuthController(UserAccountService userAccountService,
+                          JwtUtil jwtUtil) {
+        this.userAccountService = userAccountService;
+        this.authenticationManager = null;
+        this.jwtUtil = jwtUtil;
+    }
+
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -44,7 +56,6 @@ public class AuthController {
         );
     }
 
-    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 

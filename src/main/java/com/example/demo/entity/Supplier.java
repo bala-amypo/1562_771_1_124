@@ -13,26 +13,39 @@ public class Supplier {
     private Long id;
 
     private String name;
-
     private String registrationNumber;
-
     private String email;
 
     private Boolean isActive = true;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
-        name = "supplier_diversity",
-        joinColumns = @JoinColumn(name = "supplier_id"),
-        inverseJoinColumns = @JoinColumn(name = "diversity_id")
+            name = "supplier_diversity",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "diversity_id")
     )
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
-    // ================== REQUIRED BY TESTS ==================
+    // ===== REQUIRED BY TESTS =====
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 
     public String getName() {
         return name;
@@ -58,14 +71,6 @@ public class Supplier {
         this.email = email;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -74,16 +79,6 @@ public class Supplier {
         return updatedAt;
     }
 
-    // ===== TEST COMPATIBILITY =====
-public Boolean getActive() {
-    return isActive;
-}
-
-public void setActive(Boolean active) {
-    this.isActive = active;
-}
-
-
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -91,8 +86,6 @@ public void setActive(Boolean active) {
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
     }
-
-    // ================== LIFECYCLE METHODS ==================
 
     @PrePersist
     public void prePersist() {
