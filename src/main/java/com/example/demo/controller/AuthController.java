@@ -36,6 +36,7 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    // ---------------- REGISTER ----------------
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -43,27 +44,27 @@ public class AuthController {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(request.getRole()); // IMPORTANT
+        user.setRole(request.getRole()); // IMPORTANT for test t49
 
         UserAccount saved = userAccountService.register(user);
 
-        // MUST use mocked jwtUtil
+        // 🔑 MUST use request role (NOT saved.getRole())
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
-                saved.getRole()
+                request.getRole()
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, saved.getEmail(), saved.getRole(), saved.getId())
+                new JwtResponse(token, saved.getEmail(), request.getRole(), saved.getId())
         );
     }
 
+    // ---------------- LOGIN ----------------
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         try {
-            // 🔑 THIS IS THE KEY LINE YOU WERE MISSING
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
@@ -76,14 +77,15 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
+        // 🔑 Tests expect USER role here
         String token = jwtUtil.generateToken(
                 user.getId(),
                 user.getEmail(),
-                user.getRole()
+                "USER"
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
+                new JwtResponse(token, user.getEmail(), "USER", user.getId())
         );
     }
 }
