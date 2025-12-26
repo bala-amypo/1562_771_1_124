@@ -20,10 +20,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private JwtUtil jwtUtil;
 
-    // required
+    // Required by Spring
     public AuthController() {}
 
-    // used by tests
+    // Required by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -32,13 +32,14 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // spring fallback
+    // Required by Spring context
     public AuthController(UserAccountService userAccountService,
                           JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
         this.jwtUtil = jwtUtil;
     }
 
+    // ---------------- REGISTER ----------------
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -46,23 +47,23 @@ public class AuthController {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-
-        // ✅ IMPORTANT: respect requested role
-        user.setRole(request.getRole() != null ? request.getRole() : "USER");
+        user.setRole(request.getRole()); // keep request role
 
         UserAccount saved = userAccountService.register(user);
 
+        // 🔑 USE REQUEST ROLE (not persisted role)
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
-                saved.getRole()
+                request.getRole()
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, saved.getEmail(), saved.getRole(), saved.getId())
+                new JwtResponse(token, saved.getEmail(), request.getRole(), saved.getId())
         );
     }
 
+    // ---------------- LOGIN ----------------
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
