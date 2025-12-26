@@ -13,12 +13,16 @@ public class Supplier {
     private Long id;
 
     private String name;
+
     private String registrationNumber;
+
     private String email;
 
+    // IMPORTANT: Boolean (not boolean)
     private Boolean isActive = true;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @ManyToMany
@@ -29,23 +33,18 @@ public class Supplier {
     )
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
-    // ===== REQUIRED BY TESTS =====
+    // ================== ID ==================
 
     public Long getId() {
         return id;
     }
 
+    // REQUIRED BY TESTS
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+    // ================== BASIC FIELDS ==================
 
     public String getName() {
         return name;
@@ -71,6 +70,28 @@ public class Supplier {
         this.email = email;
     }
 
+    // ================== ACTIVE FLAG ==================
+    // BOTH versions are REQUIRED (tests + services)
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    // 🔥 REQUIRED BY SERVICES
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        this.isActive = active;
+    }
+
+    // ================== TIMESTAMPS ==================
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -83,20 +104,13 @@ public class Supplier {
         this.updatedAt = updatedAt;
     }
 
+    // ================== RELATIONS ==================
+
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
     }
 
-    // ===== ALIAS METHODS (REQUIRED BY SERVICES) =====
-
-public Boolean getActive() {
-    return this.isActive;
-}
-
-public void setActive(boolean active) {
-    this.isActive = active;
-}
-
+    // ================== LIFECYCLE ==================
 
     @PrePersist
     public void prePersist() {
