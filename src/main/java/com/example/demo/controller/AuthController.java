@@ -6,6 +6,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
@@ -47,16 +48,18 @@ public class AuthController {
                 saved.getRole()
         );
 
-        return new JwtResponse(
+        JwtResponse response = new JwtResponse(
                 token,
                 saved.getEmail(),
                 saved.getRole(),
                 saved.getId()
         );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
@@ -72,11 +75,13 @@ public class AuthController {
                 user.getRole()
         );
 
-        return new JwtResponse(
+        JwtResponse response = new JwtResponse(
                 token,
                 user.getEmail(),
                 user.getRole(),
                 user.getId()
         );
+
+        return ResponseEntity.ok(response);
     }
 }
