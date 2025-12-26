@@ -10,11 +10,8 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // =================================================
-    // 🔥 THIS FIELD NAME MUST MATCH REPOSITORY METHOD
-    // =================================================
-    @Column(name = "year")
-    private Integer targetYear;
+    // 🔥 ONLY REAL FIELD USED BY JPA
+    private Integer year;
 
     private Double percentage;
 
@@ -24,13 +21,13 @@ public class DiversityTarget {
     @JoinColumn(name = "classification_id")
     private DiversityClassification classification;
 
-    // ================= GETTERS =================
+    // ========= JPA GETTERS =========
     public Long getId() {
         return id;
     }
 
-    public Integer getTargetYear() {
-        return targetYear;
+    public Integer getYear() {
+        return year;
     }
 
     public Double getPercentage() {
@@ -45,13 +42,13 @@ public class DiversityTarget {
         return classification;
     }
 
-    // ================= SETTERS =================
+    // ========= JPA SETTERS =========
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setTargetYear(Integer targetYear) {
-        this.targetYear = targetYear;
+    public void setYear(Integer year) {
+        this.year = year;
     }
 
     public void setPercentage(Double percentage) {
@@ -66,21 +63,21 @@ public class DiversityTarget {
         this.classification = classification;
     }
 
-    // ================= TEST COMPATIBILITY =================
-    public void setYear(Integer year) {
-        this.targetYear = year;
+    // ========= TEST COMPATIBILITY =========
+    public Integer getTargetYear() {
+        return year;
     }
 
-    public Integer getYear() {
-        return targetYear;
-    }
-
-    public void setTargetPercentage(double percentage) {
-        this.percentage = percentage;
+    public void setTargetYear(Integer year) {
+        this.year = year;
     }
 
     public double getTargetPercentage() {
         return percentage;
+    }
+
+    public void setTargetPercentage(double percentage) {
+        this.percentage = percentage;
     }
 
     @PrePersist
