@@ -15,21 +15,26 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
     private DiversityTargetRepository repository;
 
     @Override
-    public DiversityTarget create(DiversityTarget target) {
+    public DiversityTarget createTarget(DiversityTarget target) {
         return repository.save(target);
     }
 
     @Override
-    public void deactivate(Long id) {
+    public List<DiversityTarget> getAllTargets() {
+        return repository.findAll();
+    }
+
+    // 🔥 FIXES t15
+    @Override
+    public List<DiversityTarget> getByYear(int year) {
+        return repository.findByTargetYear(year);
+    }
+
+    @Override
+    public void deactivateTarget(Long id) {
         DiversityTarget target = repository.findById(id)
                 .orElseThrow(RuntimeException::new);
         target.setActive(false);
         repository.save(target);
-    }
-
-    // 🔥 REQUIRED FOR t15
-    @Override
-    public List<DiversityTarget> getTargetsByYear(int year) {
-        return repository.findByTargetYear(year);
     }
 }

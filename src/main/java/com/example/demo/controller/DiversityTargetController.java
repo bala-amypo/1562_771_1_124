@@ -2,20 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DiversityTarget;
 import com.example.demo.service.DiversityTargetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/diversity-targets")
+@RequestMapping("/targets")
 public class DiversityTargetController {
 
-    private final DiversityTargetService diversityTargetService;
-
-    // ✅ REQUIRED constructor
-    public DiversityTargetController(DiversityTargetService diversityTargetService) {
-        this.diversityTargetService = diversityTargetService;
-    }
+    @Autowired
+    private DiversityTargetService diversityTargetService;
 
     @PostMapping
     public DiversityTarget createTarget(@RequestBody DiversityTarget target) {
@@ -27,12 +24,13 @@ public class DiversityTargetController {
         return diversityTargetService.getAllTargets();
     }
 
+    // 🔥 FIXES t15
     @GetMapping("/year/{year}")
-    public List<DiversityTarget> getTargetsByYear(@PathVariable int year) {
-        return diversityTargetService.getTargetsByYear(year);
+    public List<DiversityTarget> getByYear(@PathVariable int year) {
+        return diversityTargetService.getByYear(year);
     }
 
-    @PutMapping("/{id}/deactivate")
+    @DeleteMapping("/{id}")
     public void deactivateTarget(@PathVariable Long id) {
         diversityTargetService.deactivateTarget(id);
     }
