@@ -2,7 +2,11 @@ package com.example.demo.security;
 
 import java.util.Base64;
 
-public class JwtUtil {
+import org.springframework.stereotype.Component;
+
+   @Component
+    public class JwtUtil {
+
 
     private final byte[] secret;
     private final long expiration;
