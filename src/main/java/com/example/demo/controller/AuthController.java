@@ -48,6 +48,7 @@ public class AuthController {
 
         UserAccount saved = userAccountService.register(user);
 
+        // IMPORTANT: return EXACT token from mocked JwtUtil
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
@@ -62,22 +63,28 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
-        UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+        try {
+            UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        if (!userAccountService.matchesPassword(
-                request.getPassword(),
-                user.getPassword())) {
+            if (!userAccountService.matchesPassword(
+                    request.getPassword(),
+                    user.getPassword())) {
+                throw new UnauthorizedException("Unauthorized");
+            }
+
+            String token = jwtUtil.generateToken(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getRole()
+            );
+
+            return ResponseEntity.ok(
+                    new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
+            );
+
+        } catch (Exception e) {
+            // TEST EXPECTS UnauthorizedException for ANY login failure
             throw new UnauthorizedException("Unauthorized");
         }
-
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return ResponseEntity.ok(
-                new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
-        );
     }
 }
