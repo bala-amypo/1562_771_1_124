@@ -74,6 +74,16 @@ public class Supplier {
         return updatedAt;
     }
 
+    // ===== TEST COMPATIBILITY =====
+public Boolean getActive() {
+    return isActive;
+}
+
+public void setActive(Boolean active) {
+    this.isActive = active;
+}
+
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
