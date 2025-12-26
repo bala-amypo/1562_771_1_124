@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
+import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +24,35 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
-        userAccountService.register(request);
-        String token = jwtUtil.generateToken(request.getEmail());
-        return ResponseEntity.ok(new JwtResponse(token));
+
+        // ✅ register returns UserAccount (tests expect this)
+        UserAccount user = userAccountService.register(request);
+
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return ResponseEntity.ok(
+                new JwtResponse(token, "Bearer", user.getId(), user.getRole())
+        );
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        String token = jwtUtil.generateToken(request.getEmail());
-        return ResponseEntity.ok(new JwtResponse(token));
+
+        // ✅ authenticate returns UserAccount
+        UserAccount user = userAccountService.authenticate(request);
+
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return ResponseEntity.ok(
+                new JwtResponse(token, "Bearer", user.getId(), user.getRole())
+        );
     }
 }
