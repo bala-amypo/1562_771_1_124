@@ -17,15 +17,12 @@ public class AuthController {
     private final UserAccountService userAccountService;
     private final JwtUtil jwtUtil;
 
-    // ✅ REQUIRED by tests
-    public AuthController(
-            UserAccountService userAccountService,
-            AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil
-    ) {
+    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
         this.jwtUtil = jwtUtil;
     }
+}
+
 
     // ✅ ALSO KEEP THIS (Spring uses it)
     public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
