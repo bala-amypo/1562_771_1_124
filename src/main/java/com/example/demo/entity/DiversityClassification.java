@@ -10,14 +10,15 @@ public class DiversityClassification {
     private Long id;
 
     private String code;
-
     private String description;
+
+    private boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    // ---------- GETTERS & SETTERS ----------
+    // -------- GETTERS & SETTERS --------
 
     public Long getId() {
         return id;
@@ -41,6 +42,15 @@ public class DiversityClassification {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // 🔥 REQUIRED BY SERVICE
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Supplier getSupplier() {

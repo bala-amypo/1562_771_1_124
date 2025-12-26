@@ -18,10 +18,9 @@ public class Supplier {
 
     private String registrationNumber;
 
-    private Boolean isActive = true;
+    private boolean active = true;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -29,19 +28,17 @@ public class Supplier {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        if (isActive == null) {
-            isActive = true;
-        }
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        active = true;
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    // ---------- GETTERS & SETTERS ----------
+    // -------- GETTERS & SETTERS --------
 
     public Long getId() {
         return id;
@@ -75,12 +72,13 @@ public class Supplier {
         this.email = email;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
+    // 🔥 REQUIRED BY SERVICES
+    public boolean getActive() {
+        return active;
     }
 
-    public void setIsActive(Boolean active) {
-        isActive = active;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public LocalDateTime getCreatedAt() {
