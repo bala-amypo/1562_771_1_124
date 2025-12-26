@@ -14,39 +14,25 @@ public class Supplier {
 
     private String name;
 
-    private String email;
-
     private String registrationNumber;
 
-    private boolean active = true;
+    private String email;
+
+    private Boolean isActive = true;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+        name = "supplier_diversity",
+        joinColumns = @JoinColumn(name = "supplier_id"),
+        inverseJoinColumns = @JoinColumn(name = "diversity_id")
+    )
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        active = true;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
-    // -------- GETTERS & SETTERS --------
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // ================== REQUIRED BY TESTS ==================
 
     public String getName() {
         return name;
@@ -72,13 +58,12 @@ public class Supplier {
         this.email = email;
     }
 
-    // 🔥 REQUIRED BY SERVICES
-    public boolean getActive() {
-        return active;
+    public Boolean getIsActive() {
+        return isActive;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -89,11 +74,22 @@ public class Supplier {
         return updatedAt;
     }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
     }
 
-    public void setDiversityClassifications(Set<DiversityClassification> diversityClassifications) {
-        this.diversityClassifications = diversityClassifications;
+    // ================== LIFECYCLE METHODS ==================
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.isActive == null) {
+            this.isActive = true;
+        }
     }
 }

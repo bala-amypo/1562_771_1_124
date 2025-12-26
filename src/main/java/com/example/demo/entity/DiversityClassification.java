@@ -56,8 +56,15 @@ public class DiversityClassification {
     public Supplier getSupplier() {
         return supplier;
     }
+ @PrePersist
+public void preSave() {
+    if (this.active == null) {
+        this.active = true;
+    }
+}
 
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
+
     }
 }
