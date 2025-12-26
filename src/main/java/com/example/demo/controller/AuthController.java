@@ -9,6 +9,7 @@ import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,10 +20,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private JwtUtil jwtUtil;
 
-    // REQUIRED by Spring
+    // required
     public AuthController() {}
 
-    // REQUIRED by tests
+    // used by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -31,7 +32,7 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // REQUIRED by Spring context
+    // spring fallback
     public AuthController(UserAccountService userAccountService,
                           JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
@@ -42,13 +43,15 @@ public class AuthController {
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
+        user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole("USER");
+
+        // ✅ IMPORTANT: respect requested role
+        user.setRole(request.getRole() != null ? request.getRole() : "USER");
 
         UserAccount saved = userAccountService.register(user);
 
-        // IMPORTANT: return EXACT token from mocked JwtUtil
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
@@ -64,27 +67,26 @@ public class AuthController {
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         try {
-            UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
-
-            if (!userAccountService.matchesPassword(
-                    request.getPassword(),
-                    user.getPassword())) {
-                throw new UnauthorizedException("Unauthorized");
-            }
-
-            String token = jwtUtil.generateToken(
-                    user.getId(),
-                    user.getEmail(),
-                    user.getRole()
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
             );
-
-            return ResponseEntity.ok(
-                    new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
-            );
-
-        } catch (Exception e) {
-            // TEST EXPECTS UnauthorizedException for ANY login failure
+        } catch (Exception ex) {
             throw new UnauthorizedException("Unauthorized");
         }
+
+        UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return ResponseEntity.ok(
+                new JwtResponse(token, user.getEmail(), user.getRole(), user.getId())
+        );
     }
 }
