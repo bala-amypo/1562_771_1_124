@@ -7,7 +7,6 @@ import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,23 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // REQUIRED BY TESTS
-    public AuthController(UserAccountService userAccountService,
-                          AuthenticationManager authenticationManager,
-                          JwtUtil jwtUtil) {
+    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-    }
-
-    // REQUIRED BY SPRING
-    public AuthController(UserAccountService userAccountService,
-                          JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.authenticationManager = null;
         this.jwtUtil = jwtUtil;
     }
 
