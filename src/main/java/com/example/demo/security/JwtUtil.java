@@ -5,7 +5,11 @@ import java.util.Base64;
 import org.springframework.stereotype.Component;
 
    @Component
-    public class JwtUtil {
+   import org.springframework.stereotype.Component;
+
+@Component
+public class JwtUtil {
+
 
 
     private final byte[] secret;
