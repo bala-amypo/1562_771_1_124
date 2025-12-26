@@ -11,6 +11,7 @@ public class DiversityClassification {
     private Long id;
 
     private String name;
+    private String code;
     private boolean active;
 
     @PrePersist
@@ -33,5 +34,13 @@ public class DiversityClassification {
 
     public boolean getActive() {
         return active;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 }
