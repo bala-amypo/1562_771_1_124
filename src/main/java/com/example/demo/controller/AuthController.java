@@ -6,9 +6,8 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,21 +15,24 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private UserAccountService userAccountService;
+    private AuthenticationManager authenticationManager;
     private JwtUtil jwtUtil;
 
-    // ✅ REQUIRED for Spring + Tests
+    // ✅ REQUIRED FOR SPRING
     public AuthController() {
     }
 
-    @Autowired
-    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
+    // ✅ REQUIRED FOR TESTS
+    public AuthController(UserAccountService userAccountService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
-    // ================= REGISTER =================
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+    public JwtResponse register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
@@ -45,20 +47,16 @@ public class AuthController {
                 saved.getRole()
         );
 
-        // 🔥 TEST EXPECTS THIS EXACT ORDER
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        saved.getEmail(),
-                        saved.getRole(),
-                        saved.getId()
-                )
+        return new JwtResponse(
+                token,
+                saved.getEmail(),
+                saved.getRole(),
+                saved.getId()
         );
     }
 
-    // ================= LOGIN =================
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+    public JwtResponse login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
@@ -74,13 +72,11 @@ public class AuthController {
                 user.getRole()
         );
 
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getId()
-                )
+        return new JwtResponse(
+                token,
+                user.getEmail(),
+                user.getRole(),
+                user.getId()
         );
     }
 }

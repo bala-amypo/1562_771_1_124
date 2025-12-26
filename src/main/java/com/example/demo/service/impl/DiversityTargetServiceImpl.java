@@ -14,6 +14,15 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
     @Autowired
     private DiversityTargetRepository repository;
 
+    // ✅ REQUIRED FOR TESTS
+    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
+        this.repository = repository;
+    }
+
+    // ✅ REQUIRED FOR SPRING
+    public DiversityTargetServiceImpl() {
+    }
+
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
         return repository.save(target);
@@ -24,7 +33,6 @@ public class DiversityTargetServiceImpl implements DiversityTargetService {
         return repository.findAll();
     }
 
-    // 🔥 FIXES t15_get_targets_by_year
     @Override
     public List<DiversityTarget> getTargetsByYear(int year) {
         return repository.findByTargetYear(year);

@@ -14,6 +14,15 @@ public class DiversityTargetController {
     @Autowired
     private DiversityTargetService diversityTargetService;
 
+    // ✅ REQUIRED FOR TESTS
+    public DiversityTargetController(DiversityTargetService diversityTargetService) {
+        this.diversityTargetService = diversityTargetService;
+    }
+
+    // ✅ REQUIRED FOR SPRING
+    public DiversityTargetController() {
+    }
+
     @PostMapping
     public DiversityTarget createTarget(@RequestBody DiversityTarget target) {
         return diversityTargetService.createTarget(target);
