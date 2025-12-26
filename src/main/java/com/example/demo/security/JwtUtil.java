@@ -10,8 +10,20 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "secretkey123";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private byte[] secret;
+    private long expiration;
+
+    // ✅ REQUIRED BY SPRING
+    public JwtUtil() {
+        this.secret = "secretkey123".getBytes();
+        this.expiration = 1000 * 60 * 60;
+    }
+
+    // ✅ REQUIRED BY TESTS
+    public JwtUtil(byte[] secret, long expiration) {
+        this.secret = secret;
+        this.expiration = expiration;
+    }
 
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
@@ -19,8 +31,8 @@ public class JwtUtil {
                 .claim("role", role)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
@@ -36,6 +48,11 @@ public class JwtUtil {
         return extractAllClaims(token).get("userId", Long.class);
     }
 
+    // ✅ REQUIRED BY TESTS
+    public boolean validateToken(String token) {
+        return isTokenValid(token);
+    }
+
     public boolean isTokenValid(String token) {
         try {
             extractAllClaims(token);
@@ -47,7 +64,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
