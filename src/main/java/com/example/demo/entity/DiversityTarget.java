@@ -10,9 +10,11 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // === CORE DB FIELDS ===
+    // =================================================
+    // 🔥 THIS FIELD NAME MUST MATCH REPOSITORY METHOD
+    // =================================================
     @Column(name = "year")
-    private Integer year;
+    private Integer targetYear;
 
     private Double percentage;
 
@@ -22,19 +24,13 @@ public class DiversityTarget {
     @JoinColumn(name = "classification_id")
     private DiversityClassification classification;
 
-    // =================================================
-    // 🔁 TEST / REPOSITORY COMPATIBILITY FIELD
-    // =================================================
-    @Transient
-    private Integer targetYear;
-
-    // === GETTERS ===
+    // ================= GETTERS =================
     public Long getId() {
         return id;
     }
 
-    public Integer getYear() {
-        return year;
+    public Integer getTargetYear() {
+        return targetYear;
     }
 
     public Double getPercentage() {
@@ -49,14 +45,13 @@ public class DiversityTarget {
         return classification;
     }
 
-    // === SETTERS ===
+    // ================= SETTERS =================
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
-        this.targetYear = year; // keep in sync
+    public void setTargetYear(Integer targetYear) {
+        this.targetYear = targetYear;
     }
 
     public void setPercentage(Double percentage) {
@@ -71,27 +66,21 @@ public class DiversityTarget {
         this.classification = classification;
     }
 
-    // =================================================
-    // 🔥 REQUIRED BY REPOSITORY: findByTargetYear()
-    // =================================================
-    public Integer getTargetYear() {
-        return year;
+    // ================= TEST COMPATIBILITY =================
+    public void setYear(Integer year) {
+        this.targetYear = year;
     }
 
-    public void setTargetYear(Integer targetYear) {
-        this.targetYear = targetYear;
-        this.year = targetYear;
-    }
-
-    // =================================================
-    // OPTIONAL TEST METHODS (SAFE)
-    // =================================================
-    public double getTargetPercentage() {
-        return percentage;
+    public Integer getYear() {
+        return targetYear;
     }
 
     public void setTargetPercentage(double percentage) {
         this.percentage = percentage;
+    }
+
+    public double getTargetPercentage() {
+        return percentage;
     }
 
     @PrePersist
