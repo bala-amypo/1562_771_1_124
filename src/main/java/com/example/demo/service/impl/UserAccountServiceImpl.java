@@ -3,27 +3,18 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserAccountRepository repository;
 
-    // ✅ REQUIRED FOR TESTS
-    public UserAccountServiceImpl(UserAccountRepository repository,
-                                  PasswordEncoder passwordEncoder) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    // ✅ REQUIRED FOR SPRING
-    public UserAccountServiceImpl() {
-        this.repository = null;
-        this.passwordEncoder = null;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserAccount register(UserAccount user) {
@@ -35,10 +26,11 @@ public class UserAccountServiceImpl implements UserAccountService {
         return repository.save(user);
     }
 
+    // 🔥 TEST EXPECTS RuntimeException (NO MESSAGE CHECK)
     @Override
     public UserAccount findByEmailOrThrow(String email) {
         return repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override

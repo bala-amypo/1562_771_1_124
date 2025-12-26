@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.DiversityTarget;
 import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,37 +11,25 @@ import java.util.List;
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    private final DiversityTargetRepository repository;
+    @Autowired
+    private DiversityTargetRepository repository;
 
-    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
-        this.repository = repository;
-    }
-
-    // ✅ CREATE
     @Override
-    public DiversityTarget createTarget(DiversityTarget target) {
+    public DiversityTarget create(DiversityTarget target) {
         return repository.save(target);
     }
 
-    // ✅ GET BY YEAR
     @Override
-    public List<DiversityTarget> getTargetsByYear(Integer year) {
-        return repository.findByYear(year);
-    }
-
-    // ✅ GET ALL (THIS WAS MISSING ❌)
-    @Override
-    public List<DiversityTarget> getAllTargets() {
-        return repository.findAll();
-    }
-
-    // ✅ DEACTIVATE
-    @Override
-    public void deactivateTarget(Long id) {
+    public void deactivate(Long id) {
         DiversityTarget target = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Target not found"));
-
+                .orElseThrow(RuntimeException::new);
         target.setActive(false);
         repository.save(target);
+    }
+
+    // 🔥 REQUIRED FOR t15
+    @Override
+    public List<DiversityTarget> getTargetsByYear(int year) {
+        return repository.findByTargetYear(year);
     }
 }

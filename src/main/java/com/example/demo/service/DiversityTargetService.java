@@ -1,15 +1,21 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.DiversityTarget;
+
 import java.util.List;
 
 public interface DiversityTargetService {
 
-    DiversityTarget createTarget(DiversityTarget target);
+    DiversityTarget create(DiversityTarget target);
 
-    List<DiversityTarget> getTargetsByYear(Integer year);
+    void deactivate(Long id);
 
-    List<DiversityTarget> getAllTargets();
+    List<DiversityTarget> getTargetsByYear(int year);
 
-    void deactivateTarget(Long id);
+
+    @GetMapping("/year/{year}")
+public List<DiversityTarget> getByYear(@PathVariable int year) {
+    return diversityTargetService.getTargetsByYear(year);
+}
+
 }
