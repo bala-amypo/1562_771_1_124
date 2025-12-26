@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +22,9 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public UserAccount register(UserAccount user) {
         if (repository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException(); // ⚠️ NO MESSAGE
+            throw new RuntimeException();
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
@@ -30,7 +32,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public UserAccount findByEmailOrThrow(String email) {
         return repository.findByEmail(email)
-                .orElseThrow(RuntimeException::new); // ⚠️ NO MESSAGE
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override

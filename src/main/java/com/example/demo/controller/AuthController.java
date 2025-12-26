@@ -4,6 +4,7 @@ import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.UnauthorizedException;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserAccountService userAccountService;
-    private final JwtUtil jwtUtil;
+    private UserAccountService userAccountService;
+    private AuthenticationManager authenticationManager;
+    private JwtUtil jwtUtil;
 
-    // ✅ REQUIRED by tests
+    // REQUIRED by Spring
+    public AuthController() {}
+
+    // REQUIRED by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
-    // ✅ REQUIRED by Spring
+    // REQUIRED by Spring context
     public AuthController(UserAccountService userAccountService,
                           JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
@@ -57,6 +63,12 @@ public class AuthController {
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
+
+        if (!userAccountService.matchesPassword(
+                request.getPassword(),
+                user.getPassword())) {
+            throw new UnauthorizedException("Unauthorized");
+        }
 
         String token = jwtUtil.generateToken(
                 user.getId(),
