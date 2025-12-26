@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface DiversityTargetRepository extends JpaRepository<DiversityTarget, Long> {
 
-    // 🔥 MUST MATCH ENTITY FIELD NAME EXACTLY
     List<DiversityTarget> findByYear(Integer year);
 }

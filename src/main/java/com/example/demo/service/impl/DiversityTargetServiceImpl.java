@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.DiversityTarget;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
 import org.springframework.stereotype.Service;
@@ -11,32 +10,43 @@ import java.util.List;
 @Service
 public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    private final DiversityTargetRepository repository;
+    private final DiversityTargetRepository diversityTargetRepository;
 
-    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
-        this.repository = repository;
+    public DiversityTargetServiceImpl(DiversityTargetRepository diversityTargetRepository) {
+        this.diversityTargetRepository = diversityTargetRepository;
     }
 
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
-        return repository.save(target);
+        return diversityTargetRepository.save(target);
     }
 
-    @Override
-    public List<DiversityTarget> getAllTargets() {
-        return repository.findAll();
-    }
-
-    // ✅ CRITICAL FIX FOR t15
     @Override
     public List<DiversityTarget> getTargetsByYear(Integer year) {
-        return repository.findByTargetYear(year);
+        // 🔥 MUST MATCH REPOSITORY METHOD
+        return diversityTargetRepository.findByYear(year);
     }
 
- 
     @Override
-public List<DiversityTarget> getTargetsByYear(int year) {
-    return diversityTargetRepository.findByYear(year);
-}
+    public DiversityTarget getTargetById(Long id) {
+        return diversityTargetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Target not found"));
+    }
 
+    @Override
+    public DiversityTarget updateTarget(Long id, DiversityTarget target) {
+        DiversityTarget existing = getTargetById(id);
+        existing.setYear(target.getYear());
+        existing.setPercentage(target.getPercentage());
+        existing.setActive(target.getActive());
+        existing.setClassification(target.getClassification());
+        return diversityTargetRepository.save(existing);
+    }
+
+    @Override
+    public void deactivateTarget(Long id) {
+        DiversityTarget target = getTargetById(id);
+        target.setActive(false);
+        diversityTargetRepository.save(target);
+    }
 }
