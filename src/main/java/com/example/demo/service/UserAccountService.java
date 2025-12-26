@@ -8,5 +8,6 @@ public interface UserAccountService {
 
     UserAccount findByEmailOrThrow(String email);
 
-    boolean passwordMatches(String raw, String encoded);
+    // ✅ ADD THIS
+    boolean matchesPassword(String rawPassword, String encodedPassword);
 }
