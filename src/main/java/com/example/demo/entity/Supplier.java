@@ -87,6 +87,17 @@ public class Supplier {
         return diversityClassifications;
     }
 
+    // ===== ALIAS METHODS (REQUIRED BY SERVICES) =====
+
+public Boolean getActive() {
+    return this.isActive;
+}
+
+public void setActive(boolean active) {
+    this.isActive = active;
+}
+
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
