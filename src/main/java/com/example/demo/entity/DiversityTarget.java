@@ -81,9 +81,11 @@ public class DiversityTarget {
     }
 
     @PrePersist
-    public void prePersist() {
-        if (active == null) {
-            active = true;
-        }
+public void preSave() {
+    if (active == null) {
+        active = true;
+    }
+
+
     }
 }
