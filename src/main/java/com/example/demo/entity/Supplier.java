@@ -13,27 +13,35 @@ public class Supplier {
     private Long id;
 
     private String name;
+
+    private String email;
+
     private String registrationNumber;
-    private boolean active = true;
+
+    private Boolean isActive = true;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiversityClassification> diversityClassifications = new ArrayList<>();
 
-    // ================= LIFECYCLE =================
+    // ================= REQUIRED BY TEST (DIRECT CALL) =================
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        if (this.isActive == null) {
+            this.isActive = true;
+        }
     }
 
     @PreUpdate
-    public void onUpdate() {
+    public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ================= GETTERS & SETTERS =================
+    // ================= GETTERS & SETTERS (TEST EXPECTED NAMES) =================
 
     public Long getId() {
         return id;
@@ -51,6 +59,16 @@ public class Supplier {
         this.name = name;
     }
 
+    // ✅ REQUIRED
+    public String getEmail() {
+        return email;
+    }
+
+    // ✅ REQUIRED
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getRegistrationNumber() {
         return registrationNumber;
     }
@@ -59,12 +77,22 @@ public class Supplier {
         this.registrationNumber = registrationNumber;
     }
 
-    public boolean getActive() {
-        return active;
+    // ✅ TEST EXPECTS isActive NAMING (NOT getActive)
+    public Boolean getIsActive() {
+        return isActive;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    // Compatibility for service layer
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        this.isActive = active;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -83,8 +111,7 @@ public class Supplier {
         return diversityClassifications;
     }
 
-    public void setDiversityClassifications(
-            List<DiversityClassification> diversityClassifications) {
+    public void setDiversityClassifications(List<DiversityClassification> diversityClassifications) {
         this.diversityClassifications = diversityClassifications;
     }
 }
