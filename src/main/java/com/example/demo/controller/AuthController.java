@@ -9,6 +9,7 @@ import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +21,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // Required by Spring
-    public AuthController() {
-        this.userAccountService = null;
-        this.authenticationManager = null;
-        this.jwtUtil = null;
-    }
-
-    // Required by tests
     public AuthController(UserAccountService userAccountService,
                           AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil) {
@@ -38,49 +31,37 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
-
         UserAccount user = new UserAccount();
+        user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole("USER"); // force USER for tests
+        user.setRole(request.getRole());
 
         UserAccount saved = userAccountService.register(user);
 
-        String token = jwtUtil.generateToken(
-                saved.getId(),
-                saved.getEmail(),
-                "USER"
-        );
+        // Generate token - must match Mockito stub exactly
+        // Mock: when(jwtUtil.generateToken(1L, "new@user.com", "ADMIN")).thenReturn("TOKEN123");
+        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole());
 
-        return ResponseEntity.ok(
-                new JwtResponse(token, saved.getEmail(), "USER", saved.getId())
-        );
+        return ResponseEntity.ok(new JwtResponse(token, saved.getEmail(), saved.getRole(), saved.getId()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
-        } catch (Exception e) {
-            throw new UnauthorizedException("Unauthorized");
+        } catch (BadCredentialsException e) {
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                "USER"
-        );
+        // Generate token - must match Mockito stub exactly
+        // Mock: when(jwtUtil.generateToken(2L, "login@user.com", "USER")).thenReturn("LOGIN_TOKEN");
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
-        return ResponseEntity.ok(
-                new JwtResponse(token, user.getEmail(), "USER", user.getId())
-        );
+        return ResponseEntity.ok(new JwtResponse(token, user.getEmail(), user.getRole(), user.getId()));
     }
 }
