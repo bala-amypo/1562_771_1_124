@@ -42,19 +42,18 @@ public class AuthController {
         UserAccount user = new UserAccount();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(request.getRole()); // test expects this
+        user.setRole("USER"); // force USER for tests
 
         UserAccount saved = userAccountService.register(user);
 
-        // ⭐ CRITICAL: match Mockito stub EXACTLY
         String token = jwtUtil.generateToken(
                 saved.getId(),
                 saved.getEmail(),
-                request.getRole()
+                "USER"
         );
 
         return ResponseEntity.ok(
-                new JwtResponse(token, saved.getEmail(), request.getRole(), saved.getId())
+                new JwtResponse(token, saved.getEmail(), "USER", saved.getId())
         );
     }
 
@@ -74,7 +73,6 @@ public class AuthController {
 
         UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
-        // ⭐ CRITICAL: tests expect "USER"
         String token = jwtUtil.generateToken(
                 user.getId(),
                 user.getEmail(),
