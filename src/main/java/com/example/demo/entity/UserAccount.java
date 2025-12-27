@@ -20,26 +20,30 @@ public class UserAccount {
 
     public UserAccount() {}
 
-    public UserAccount(Long id, String email, String password, String role, String fullName) {
+    // ✅ FIXED: Match the parameter order expected by the test
+    // Test calls: new UserAccount(1L, "New User", "new@user.com", "password123_ENC", "ADMIN")
+    //                              id   fullName     email           password          role
+    public UserAccount(Long id, String fullName, String email, String password, String role) {
         this.id = id;
+        this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.fullName = fullName;
     }
 
     @PrePersist
     public void prePersist() {
         if (this.role == null) {
-            this.role = "USER"; // ✅ REQUIRED
+            this.role = "USER";
         }
         if (this.active == null) {
-            this.active = true; // ✅ REQUIRED
+            this.active = true;
         }
         this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
